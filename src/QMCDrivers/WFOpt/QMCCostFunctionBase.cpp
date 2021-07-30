@@ -526,11 +526,12 @@ void QMCCostFunctionBase::updateXmlNodes()
     for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
     {
       xmlNodePtr cur      = result->nodesetval->nodeTab[iparam];
-      auto iptr           = std::unique_ptr<xmlChar, decltype(xmlFree)>(xmlGetProp(cur, (const xmlChar*)"id"), xmlFree);
+      auto iptr =
+          std::unique_ptr<xmlChar, decltype(xmlFree)>(xmlGetProp(cur, reinterpret_cast<const xmlChar*>("id")), xmlFree);
       if (iptr == nullptr)
         continue;
-      std::string aname((const char*)iptr.get());
-      opt_variables_type::iterator oit(OptVariablesForPsi.find(aname));
+      std::string aname(reinterpret_cast<const char*>(iptr.get()));
+      auto oit = OptVariablesForPsi.find(aname);
       if (oit != OptVariablesForPsi.end())
       {
         paramNodes[aname] = cur;

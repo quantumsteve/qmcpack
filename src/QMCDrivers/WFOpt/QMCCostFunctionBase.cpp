@@ -510,11 +510,8 @@ void QMCCostFunctionBase::resetCostFunction(std::vector<xmlNodePtr>& cset)
   }
 }
 
-
-void QMCCostFunctionBase::updateXmlNodes()
+void QMCCostFunctionBase::createDocumentTree()
 {
-  if (m_doc_out == NULL) //first time, create a document tree and get parameters and attributes to be updated
-  {
     m_doc_out          = xmlNewDoc((const xmlChar*)"1.0");
     xmlNodePtr qm_root = xmlNewNode(NULL, BAD_CAST "qmcsystem");
     xmlAddChild(qm_root, m_wfPtr);
@@ -597,6 +594,23 @@ void QMCCostFunctionBase::updateXmlNodes()
       }
     }
     xmlXPathFreeObject(result);
+    //check csf
+    result = xmlXPathEvalExpression((const xmlChar*)"//csf", acontext);
+    for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
+    {
+      xmlNodePtr cur      = result->nodesetval->nodeTab[iparam];
+      const xmlChar* iptr = xmlGetProp(cur, (const xmlChar*)"id");
+      if (iptr == NULL)
+        continue;
+      std::string aname((const char*)iptr);
+      xmlAttrPtr aptr = xmlHasProp(cur, (const xmlChar*)"coeff");
+      opt_variables_type::iterator oit(OptVariablesForPsi.find(aname));
+      if (aptr != NULL && oit != OptVariablesForPsi.end())
+      {
+        attribNodes[aname] = std::pair<xmlNodePtr, std::string>(cur, "coeff");
+      }
+    }
+    xmlXPathFreeObject(result);
     if (CI_Opt)
     {
       //check multidet
@@ -613,19 +627,16 @@ void QMCCostFunctionBase::updateXmlNodes()
     addCoefficients(acontext, "//coefficients");
     addCJParams(acontext, "//jastrow");
     xmlXPathFreeContext(acontext);
-  }
-  //     Psi.reportStatus(app_log());
-  std::map<std::string, xmlNodePtr>::iterator pit(paramNodes.begin()), pit_end(paramNodes.end());
-  while (pit != pit_end)
+}
+
+void QMCCostFunctionBase::updateXmlNodes()
+{
+  if (m_doc_out == nullptr) //first time, create a document tree and get parameters and attributes to be updated
   {
-    //FIXME real value is forced here to makde sure that the code builds
-    Return_rt v = std::real(OptVariablesForPsi[(*pit).first]);
-    getContent(v, (*pit).second);
-    //         vout <<(*pit).second<< std::endl;
-    ++pit;
+    this->createDocumentTree();
   }
-  std::map<std::string, std::pair<xmlNodePtr, std::string>>::iterator ait(attribNodes.begin()),
-      ait_end(attribNodes.end());
+  auto ait     = attribNodes.begin();
+  auto ait_end = attribNodes.end();
   while (ait != ait_end)
   {
     std::ostringstream vout;
@@ -635,7 +646,8 @@ void QMCCostFunctionBase::updateXmlNodes()
     xmlSetProp((*ait).second.first, (const xmlChar*)(*ait).second.second.c_str(), (const xmlChar*)vout.str().c_str());
     ++ait;
   }
-  std::map<std::string, xmlNodePtr>::iterator cit(coeffNodes.begin()), cit_end(coeffNodes.end());
+  auto cit     = coeffNodes.begin();
+  auto cit_end = coeffNodes.end();
   while (cit != cit_end)
   {
     std::string rname((*cit).first);

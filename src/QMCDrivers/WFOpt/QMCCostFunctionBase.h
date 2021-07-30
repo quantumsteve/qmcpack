@@ -317,6 +317,7 @@ protected:
   std::unique_ptr<std::ostream> debug_stream;
 
   bool checkParameters();
+  void createDocumentTree();
   void updateXmlNodes();
 
 

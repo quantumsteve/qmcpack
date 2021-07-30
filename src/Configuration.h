@@ -27,11 +27,6 @@
 #include "Platforms/Host/OutputManager.h"
 #include "Message/Communicate.h"
 
-//define empty DEBUG_MEMORY
-#define DEBUG_MEMORY(msg)
-//uncomment this out to trace the call tree of destructors
-//#define DEBUG_MEMORY(msg) std::cerr << "<<<< " << msg << std::endl;
-
 #if defined(DEBUG_PSIBUFFER_ON)
 #define DEBUG_PSIBUFFER(who, msg)                              \
   std::cerr << "PSIBUFFER " << who << " " << msg << std::endl; \

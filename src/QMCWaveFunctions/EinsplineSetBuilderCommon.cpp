@@ -87,7 +87,6 @@ inline TinyVector<T, 3> FracPart(const TinyVector<T, 3>& twist)
 
 EinsplineSetBuilder::~EinsplineSetBuilder()
 {
-  DEBUG_MEMORY("EinsplineSetBuilder::~EinsplineSetBuilder");
   if (MixedSplineReader)
     delete MixedSplineReader;
   if (H5FileID >= 0)

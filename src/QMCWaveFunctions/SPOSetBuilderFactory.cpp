@@ -97,7 +97,7 @@ SPOSetBuilderFactory::SPOSetBuilderFactory(Communicate* comm, ParticleSet& els, 
   ClassName = "SPOSetBuilderFactory";
 }
 
-SPOSetBuilderFactory::~SPOSetBuilderFactory() { DEBUG_MEMORY("SPOSetBuilderFactory::~SPOSetBuilderFactory"); }
+SPOSetBuilderFactory::~SPOSetBuilderFactory() = default;
 
 SPOSetBuilder* SPOSetBuilderFactory::createSPOSetBuilder(xmlNodePtr rootNode)
 {

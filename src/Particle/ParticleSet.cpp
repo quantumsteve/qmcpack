@@ -126,7 +126,6 @@ ParticleSet::ParticleSet(const ParticleSet& p)
 
 ParticleSet::~ParticleSet()
 {
-  DEBUG_MEMORY("ParticleSet::~ParticleSet");
   delete_iter(DistTables.begin(), DistTables.end());
 }
 

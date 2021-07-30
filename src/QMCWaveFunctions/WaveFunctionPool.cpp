@@ -31,7 +31,6 @@ WaveFunctionPool::WaveFunctionPool(ParticleSetPool& pset_pool, Communicate* c, c
 
 WaveFunctionPool::~WaveFunctionPool()
 {
-  DEBUG_MEMORY("WaveFunctionPool::~WaveFunctionPool");
   PoolType::iterator it(myPool.begin());
   while (it != myPool.end())
   {

@@ -615,7 +615,6 @@ bool QMCFixedSampleLinearOptimize::processOptXML(xmlNodePtr opt_xml,
   vmcEngine->setStatus(RootName, h5FileRoot, AppendRun);
   vmcEngine->process(qsave);
 
-  bool success = true;
   //allways reset optTarget
 #if defined(QMC_CUDA)
   if (useGPU)
@@ -626,9 +625,7 @@ bool QMCFixedSampleLinearOptimize::processOptXML(xmlNodePtr opt_xml,
   optTarget->setStream(&app_log());
   if (reportH5)
     optTarget->reportH5 = true;
-  success = optTarget->put(qsave);
-
-  return success;
+  return optTarget->put(qsave);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

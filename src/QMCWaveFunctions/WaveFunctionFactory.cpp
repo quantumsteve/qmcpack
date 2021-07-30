@@ -50,7 +50,7 @@ WaveFunctionFactory::WaveFunctionFactory(const std::string& psiName,
       targetPsi(std::make_unique<TrialWaveFunction>(psiName, tasking)),
       targetPtcl(qp),
       ptclPool(pset),
-      myNode(NULL),
+      myNode(nullptr, xmlFreeNode),
       sposet_builder_factory_(c, qp, pset)
 {
   ClassName = "WaveFunctionFactory";
@@ -58,11 +58,7 @@ WaveFunctionFactory::WaveFunctionFactory(const std::string& psiName,
   targetPsi->setMassTerm(targetPtcl);
 }
 
-WaveFunctionFactory::~WaveFunctionFactory()
-{
-  if (myNode != NULL)
-    xmlFreeNode(myNode);
-}
+WaveFunctionFactory::~WaveFunctionFactory() = default;
 
 bool WaveFunctionFactory::build(xmlNodePtr cur, bool buildtree)
 {
@@ -73,13 +69,13 @@ bool WaveFunctionFactory::build(xmlNodePtr cur, bool buildtree)
   app_summary() << std::endl;
 
   ReportEngine PRE(ClassName, "build");
-  if (cur == NULL)
+  if (cur == nullptr)
     return false;
   bool attach2Node = false;
   if (buildtree)
   {
-    if (myNode == NULL)
-      myNode = xmlCopyNode(cur, 1);
+    if (myNode == nullptr)
+      myNode.reset(xmlCopyNode(cur, 1));
     else
       attach2Node = true;
   }
@@ -87,7 +83,7 @@ bool WaveFunctionFactory::build(xmlNodePtr cur, bool buildtree)
   bool success = true;
   while (cur != NULL)
   {
-    std::string cname((const char*)(cur->name));
+    std::string cname(reinterpret_cast<const char*>(cur->name));
     if (cname == "sposet_builder" || cname == "sposet_collection")
       sposet_builder_factory_.buildSPOSetCollection(cur);
     else if (cname == WaveFunctionComponentBuilder::detset_tag)
@@ -160,7 +156,7 @@ bool WaveFunctionFactory::build(xmlNodePtr cur, bool buildtree)
     }
 #endif
     if (attach2Node)
-      xmlAddChild(myNode, xmlCopyNode(cur, 1));
+      xmlAddChild(myNode.get(), xmlCopyNode(cur, 1));
     cur = cur->next;
   }
   //{

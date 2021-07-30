@@ -47,7 +47,7 @@ public:
   ///read from xmlNode
   bool put(xmlNodePtr cur);
   ///get xmlNode
-  xmlNodePtr getNode() const { return myNode; }
+  xmlNodePtr getNode() const { return myNode.get(); }
   ///get targetPsi
   TrialWaveFunction* getTWF() const { return targetPsi.get(); }
   ///get SPOSet
@@ -75,7 +75,7 @@ private:
   ///reference to the PtclPoolType
   PtclPoolType& ptclPool;
   ///input node for a many-body wavefunction
-  xmlNodePtr myNode;
+  std::unique_ptr<xmlNode, void (*)(xmlNodePtr)> myNode;
   ///builder tree
   UPtrVector<WaveFunctionComponentBuilder> psiBuilder;
 

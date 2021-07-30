@@ -27,6 +27,8 @@
 
 namespace qmcplusplus
 {
+const xmlChar* operator"" _uc(const char* in, size_t) { return reinterpret_cast<const xmlChar*>(in); }
+
 QMCCostFunctionBase::QMCCostFunctionBase(MCWalkerConfiguration& w,
                                          TrialWaveFunction& psi,
                                          QMCHamiltonian& h,
@@ -54,8 +56,8 @@ QMCCostFunctionBase::QMCCostFunctionBase(MCWalkerConfiguration& w,
       targetExcited(false),
       omega_shift(0.0),
       msg_stream(0),
-      m_wfPtr(NULL),
-      m_doc_out(NULL),
+      m_wfPtr(nullptr),
+      m_doc_out(nullptr),
       includeNonlocalH("no")
 {
   GEVType = "mixed";
@@ -78,7 +80,8 @@ QMCCostFunctionBase::QMCCostFunctionBase(MCWalkerConfiguration& w,
 /** Clean up the vector */
 QMCCostFunctionBase::~QMCCostFunctionBase()
 {
-  //if (m_doc_out != NULL) xmlFreeDoc(m_doc_out);
+  if (m_doc_out != nullptr)
+    xmlFreeDoc(m_doc_out);
 }
 
 void QMCCostFunctionBase::setRng(std::vector<RandomGenerator_t*>& r)
@@ -513,18 +516,22 @@ void QMCCostFunctionBase::resetCostFunction(std::vector<xmlNodePtr>& cset)
 void QMCCostFunctionBase::createDocumentTree()
 {
     m_doc_out          = xmlNewDoc((const xmlChar*)"1.0");
-    xmlNodePtr qm_root = xmlNewNode(NULL, BAD_CAST "qmcsystem");
-    xmlAddChild(qm_root, m_wfPtr);
+    xmlNodePtr qm_root = xmlNewNode(nullptr, BAD_CAST "qmcsystem");
+    if (m_wfPtr != nullptr)
+    {
+      //how do I reenable this??????
+      //xmlAddChild(qm_root, m_wfPtr);
+    }
     xmlDocSetRootElement(m_doc_out, qm_root);
     xmlXPathContextPtr acontext = xmlXPathNewContext(m_doc_out);
 
     //check var
-    xmlXPathObjectPtr result = xmlXPathEvalExpression((const xmlChar*)"//var", acontext);
+    std::unique_ptr<xmlXPathObject, void (*)(xmlXPathObject*)> result(xmlXPathEvalExpression("//var"_uc, acontext),
+                                                                      xmlXPathFreeObject);
     for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
     {
-      xmlNodePtr cur      = result->nodesetval->nodeTab[iparam];
-      auto iptr =
-          std::unique_ptr<xmlChar, decltype(xmlFree)>(xmlGetProp(cur, reinterpret_cast<const xmlChar*>("id")), xmlFree);
+      xmlNodePtr cur = result->nodesetval->nodeTab[iparam];
+      auto iptr      = std::unique_ptr<xmlChar, decltype(xmlFree)>(xmlGetProp(cur, "id"_uc), xmlFree);
       if (iptr == nullptr)
         continue;
       std::string aname(reinterpret_cast<const char*>(iptr.get()));
@@ -534,93 +541,86 @@ void QMCCostFunctionBase::createDocumentTree()
         paramNodes[aname] = cur;
       }
     }
-    xmlXPathFreeObject(result);
     //check radfunc
-    result = xmlXPathEvalExpression((const xmlChar*)"//radfunc", acontext);
+    result.reset(xmlXPathEvalExpression("//radfunc"_uc, acontext));
     for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
     {
       xmlNodePtr cur      = result->nodesetval->nodeTab[iparam];
-      const xmlChar* iptr = xmlGetProp(cur, (const xmlChar*)"id");
-      if (iptr == NULL)
+      auto iptr           = std::unique_ptr<xmlChar, decltype(xmlFree)>(xmlGetProp(cur, "id"_uc), xmlFree);
+      if (iptr == nullptr)
         continue;
-      std::string aname((const char*)iptr);
+      std::string aname(reinterpret_cast<const char*>(iptr.get()));
       std::string expID = aname + "_E";
-      xmlAttrPtr aptr   = xmlHasProp(cur, (const xmlChar*)"exponent");
-      opt_variables_type::iterator oit(OptVariablesForPsi.find(expID));
-      if (aptr != NULL && oit != OptVariablesForPsi.end())
+      xmlAttrPtr aptr   = xmlHasProp(cur, "exponent"_uc);
+      auto oit          = OptVariablesForPsi.find(expID);
+      if (aptr != nullptr && oit != OptVariablesForPsi.end())
       {
         attribNodes[expID] = std::pair<xmlNodePtr, std::string>(cur, "exponent");
       }
       std::string cID = aname + "_C";
-      aptr            = xmlHasProp(cur, (const xmlChar*)"contraction");
+      aptr            = xmlHasProp(cur, "contraction"_uc);
       oit             = OptVariablesForPsi.find(cID);
-      if (aptr != NULL && oit != OptVariablesForPsi.end())
+      if (aptr != nullptr && oit != OptVariablesForPsi.end())
       {
         attribNodes[cID] = std::pair<xmlNodePtr, std::string>(cur, "contraction");
       }
     }
-    xmlXPathFreeObject(result);
     //check ci
-    result = xmlXPathEvalExpression((const xmlChar*)"//ci", acontext);
+    result.reset(xmlXPathEvalExpression("//ci"_uc, acontext));
     for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
     {
       xmlNodePtr cur      = result->nodesetval->nodeTab[iparam];
-      const xmlChar* iptr = xmlGetProp(cur, (const xmlChar*)"id");
-      if (iptr == NULL)
+      auto iptr           = std::unique_ptr<xmlChar, decltype(xmlFree)>(xmlGetProp(cur, "id"_uc), xmlFree);
+      if (iptr == nullptr)
         continue;
-      std::string aname((const char*)iptr);
+      std::string aname(reinterpret_cast<const char*>(iptr.get()));
       xmlAttrPtr aptr = xmlHasProp(cur, (const xmlChar*)"coeff");
-      opt_variables_type::iterator oit(OptVariablesForPsi.find(aname));
-      if (aptr != NULL && oit != OptVariablesForPsi.end())
+      auto oit        = OptVariablesForPsi.find(aname);
+      if (aptr != nullptr && oit != OptVariablesForPsi.end())
       {
         attribNodes[aname] = std::pair<xmlNodePtr, std::string>(cur, "coeff");
       }
     }
-    xmlXPathFreeObject(result);
+    result.reset(xmlXPathEvalExpression("//csf"_uc, acontext));
+    for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
+    {
+      xmlNodePtr cur      = result->nodesetval->nodeTab[iparam];
+      auto iptr           = std::unique_ptr<xmlChar, decltype(xmlFree)>(xmlGetProp(cur, "id"_uc), xmlFree);
+      if (iptr == nullptr)
+        continue;
+      std::string aname(reinterpret_cast<const char*>(iptr.get()));
+      xmlAttrPtr aptr = xmlHasProp(cur, "coeff"_uc);
+      auto oit        = OptVariablesForPsi.find(aname);
+      if (aptr != nullptr && oit != OptVariablesForPsi.end())
+      {
+        attribNodes[aname] = std::pair<xmlNodePtr, std::string>(cur, "coeff");
+      }
+    }
     //check csf
-    result = xmlXPathEvalExpression((const xmlChar*)"//csf", acontext);
+    result.reset(xmlXPathEvalExpression("//csf"_uc, acontext));
     for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
     {
       xmlNodePtr cur      = result->nodesetval->nodeTab[iparam];
-      const xmlChar* iptr = xmlGetProp(cur, (const xmlChar*)"id");
-      if (iptr == NULL)
+      auto iptr           = std::unique_ptr<xmlChar, decltype(xmlFree)>(xmlGetProp(cur, "id"_uc), xmlFree);
+      if (iptr == nullptr)
         continue;
-      std::string aname((const char*)iptr);
-      xmlAttrPtr aptr = xmlHasProp(cur, (const xmlChar*)"coeff");
-      opt_variables_type::iterator oit(OptVariablesForPsi.find(aname));
-      if (aptr != NULL && oit != OptVariablesForPsi.end())
+      std::string aname(reinterpret_cast<const char*>(iptr.get()));
+      xmlAttrPtr aptr = xmlHasProp(cur, "coeff"_uc);
+      auto oit        = OptVariablesForPsi.find(aname);
+      if (aptr != nullptr && oit != OptVariablesForPsi.end())
       {
         attribNodes[aname] = std::pair<xmlNodePtr, std::string>(cur, "coeff");
       }
     }
-    xmlXPathFreeObject(result);
-    //check csf
-    result = xmlXPathEvalExpression((const xmlChar*)"//csf", acontext);
-    for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
-    {
-      xmlNodePtr cur      = result->nodesetval->nodeTab[iparam];
-      const xmlChar* iptr = xmlGetProp(cur, (const xmlChar*)"id");
-      if (iptr == NULL)
-        continue;
-      std::string aname((const char*)iptr);
-      xmlAttrPtr aptr = xmlHasProp(cur, (const xmlChar*)"coeff");
-      opt_variables_type::iterator oit(OptVariablesForPsi.find(aname));
-      if (aptr != NULL && oit != OptVariablesForPsi.end())
-      {
-        attribNodes[aname] = std::pair<xmlNodePtr, std::string>(cur, "coeff");
-      }
-    }
-    xmlXPathFreeObject(result);
     if (CI_Opt)
     {
       //check multidet
-      result = xmlXPathEvalExpression((const xmlChar*)"//detlist", acontext);
+      result.reset(xmlXPathEvalExpression("//detlist"_uc, acontext));
       for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
       {
         xmlNodePtr cur = result->nodesetval->nodeTab[iparam];
-        xmlSetProp(cur, (const xmlChar*)"opt_coeffs", (const xmlChar*)newh5.c_str());
+        xmlSetProp(cur, "opt_coeffs"_uc, reinterpret_cast<const xmlChar*>(newh5.c_str()));
       }
-      xmlXPathFreeObject(result);
     }
 
     addCoefficients(acontext, "//coefficient");

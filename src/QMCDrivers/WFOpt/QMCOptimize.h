@@ -62,7 +62,6 @@ private:
   ///total number of VMC walkers
   int NumOfVMCWalkers;
   ///target cost function to optimize
-  //QMCCostFunction* optTarget;
   std::unique_ptr<QMCCostFunctionBase> optTarget;
   ///solver
   MinimizerBase<RealType>* optSolver;

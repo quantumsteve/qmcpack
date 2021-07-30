@@ -160,6 +160,7 @@ void QMCLinearOptimize::finish()
 
   if (optTarget->reportH5)
     optTarget->reportParametersH5();
+  optTarget->setWaveFunctionNode(wfNode);
   optTarget->reportParameters();
 
 

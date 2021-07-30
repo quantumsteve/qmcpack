@@ -56,8 +56,8 @@ bool WaveFunctionPool::put(xmlNodePtr cur)
   if(qp == nullptr)
     myComm->barrier_and_abort("target particle set named '" + target + "' not found");
 
-  std::map<std::string, WaveFunctionFactory*>::iterator pit(myPool.find(id));
-  WaveFunctionFactory* psiFactory = 0;
+  auto pit                        = myPool.find(id);
+  WaveFunctionFactory* psiFactory = nullptr;
   bool isPrimary                  = true;
   if (pit == myPool.end())
   {

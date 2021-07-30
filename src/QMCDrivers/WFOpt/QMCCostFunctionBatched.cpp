@@ -204,15 +204,13 @@ void QMCCostFunctionBatched::getConfigurations(const std::string& aroot)
 
   if (dLogPsi.size() != numSamples)
   {
-    delete_iter(dLogPsi.begin(), dLogPsi.end());
-    delete_iter(d2LogPsi.begin(), d2LogPsi.end());
     int nptcl = W.getTotalNum();
     dLogPsi.resize(numSamples);
     d2LogPsi.resize(numSamples);
     for (int i = 0; i < numSamples; ++i)
-      dLogPsi[i] = new ParticleGradient_t(nptcl);
+      dLogPsi[i] = std::make_unique<ParticleGradient_t>(nptcl);
     for (int i = 0; i < numSamples; ++i)
-      d2LogPsi[i] = new ParticleLaplacian_t(nptcl);
+      d2LogPsi[i] = std::make_unique<ParticleLaplacian_t>(nptcl);
   }
 }
 
@@ -283,10 +281,11 @@ void QMCCostFunctionBatched::checkConfigurations()
   // lambda to execute on each crowd
   auto evalOptConfig = [](int crowd_id, UPtrVector<CostFunctionCrowdData>& opt_crowds,
                           std::vector<int>& samples_per_crowd, int crowd_size,
-                          std::vector<ParticleGradient_t*>& gradPsi, std::vector<ParticleLaplacian_t*>& lapPsi,
-                          Matrix<Return_rt>& RecordsOnNode, Matrix<Return_rt>& DerivRecords,
-                          Matrix<Return_rt>& HDerivRecords, const SampleStack& samples, opt_variables_type& optVars,
-                          bool needGrads, bool compute_nlpp, const std::string& includeNonlocalH) {
+                          std::vector<std::unique_ptr<ParticleGradient_t>>& gradPsi,
+                          std::vector<std::unique_ptr<ParticleLaplacian_t>>& lapPsi, Matrix<Return_rt>& RecordsOnNode,
+                          Matrix<Return_rt>& DerivRecords, Matrix<Return_rt>& HDerivRecords, const SampleStack& samples,
+                          opt_variables_type& optVars, bool needGrads, bool compute_nlpp,
+                          const std::string& includeNonlocalH) {
     CostFunctionCrowdData& opt_data = *opt_crowds[crowd_id];
 
     int local_samples = samples_per_crowd[crowd_id + 1] - samples_per_crowd[crowd_id];
@@ -310,8 +309,8 @@ void QMCCostFunctionBatched::checkConfigurations()
       const RefVectorWithLeader<TrialWaveFunction> wf_list(wf_list_no_leader[0], wf_list_no_leader);
       const RefVectorWithLeader<QMCHamiltonian> h_list(h_list_no_leader[0], h_list_no_leader);
 
-      auto ref_dLogPsi  = convertPtrToRefVectorSubset(gradPsi, base_sample_index, curr_crowd_size);
-      auto ref_d2LogPsi = convertPtrToRefVectorSubset(lapPsi, base_sample_index, curr_crowd_size);
+      auto ref_dLogPsi  = convertUPtrToRefVectorSubset(gradPsi, base_sample_index, curr_crowd_size);
+      auto ref_d2LogPsi = convertUPtrToRefVectorSubset(lapPsi, base_sample_index, curr_crowd_size);
 
       // Load samples into the crowd data
       for (int ib = 0; ib < curr_crowd_size; ib++)
@@ -507,7 +506,8 @@ QMCCostFunctionBatched::Return_rt QMCCostFunctionBatched::correlatedSampling(boo
   // lambda to execute on each crowd
   auto evalOptCorrelated = [](int crowd_id, UPtrVector<CostFunctionCrowdData>& opt_crowds,
                               const std::vector<int>& samples_per_crowd, int crowd_size,
-                              std::vector<ParticleGradient_t*>& gradPsi, std::vector<ParticleLaplacian_t*>& lapPsi,
+                              std::vector<std::unique_ptr<ParticleGradient_t>>& gradPsi,
+                              std::vector<std::unique_ptr<ParticleLaplacian_t>>& lapPsi,
                               Matrix<Return_rt>& RecordsOnNode, Matrix<Return_rt>& DerivRecords,
                               Matrix<Return_rt>& HDerivRecords, const SampleStack& samples,
                               const opt_variables_type& optVars, bool compute_all_from_scratch, Return_rt vmc_or_dmc,

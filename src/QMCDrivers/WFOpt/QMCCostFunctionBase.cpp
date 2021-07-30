@@ -56,8 +56,7 @@ QMCCostFunctionBase::QMCCostFunctionBase(MCWalkerConfiguration& w,
       msg_stream(0),
       m_wfPtr(NULL),
       m_doc_out(NULL),
-      includeNonlocalH("no"),
-      debug_stream(0)
+      includeNonlocalH("no")
 {
   GEVType = "mixed";
   //paramList.resize(10);
@@ -70,7 +69,7 @@ QMCCostFunctionBase::QMCCostFunctionBase(MCWalkerConfiguration& w,
 #if defined(QMCCOSTFUNCTION_DEBUG)
   char fname[16];
   sprintf(fname, "optdebug.p%d", OHMMS::Controller->mycontext());
-  debug_stream = new std::ofstream(fname);
+  debug_stream = std::make_unique<std::ofstream>(fname);
   debug_stream->setf(std::ios::scientific, std::ios::floatfield);
   debug_stream->precision(8);
 #endif
@@ -79,11 +78,7 @@ QMCCostFunctionBase::QMCCostFunctionBase(MCWalkerConfiguration& w,
 /** Clean up the vector */
 QMCCostFunctionBase::~QMCCostFunctionBase()
 {
-  delete_iter(dLogPsi.begin(), dLogPsi.end());
-  delete_iter(d2LogPsi.begin(), d2LogPsi.end());
-  //     if (m_doc_out != NULL) xmlFreeDoc(m_doc_out);
-  if (debug_stream)
-    delete debug_stream;
+  //if (m_doc_out != NULL) xmlFreeDoc(m_doc_out);
 }
 
 void QMCCostFunctionBase::setRng(std::vector<RandomGenerator_t*>& r)
@@ -531,10 +526,10 @@ void QMCCostFunctionBase::updateXmlNodes()
     for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
     {
       xmlNodePtr cur      = result->nodesetval->nodeTab[iparam];
-      const xmlChar* iptr = xmlGetProp(cur, (const xmlChar*)"id");
-      if (iptr == NULL)
+      auto iptr           = std::unique_ptr<xmlChar, decltype(xmlFree)>(xmlGetProp(cur, (const xmlChar*)"id"), xmlFree);
+      if (iptr == nullptr)
         continue;
-      std::string aname((const char*)iptr);
+      std::string aname((const char*)iptr.get());
       opt_variables_type::iterator oit(OptVariablesForPsi.find(aname));
       if (oit != OptVariablesForPsi.end())
       {

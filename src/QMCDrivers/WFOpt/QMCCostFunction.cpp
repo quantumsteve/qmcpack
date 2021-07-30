@@ -223,16 +223,14 @@ void QMCCostFunction::getConfigurations(const std::string& aroot)
 
   if (dLogPsi.size() != wPerRank[NumThreads])
   {
-    delete_iter(dLogPsi.begin(), dLogPsi.end());
-    delete_iter(d2LogPsi.begin(), d2LogPsi.end());
     int nptcl = W.getTotalNum();
     int nwtot = wPerRank[NumThreads];
     dLogPsi.resize(nwtot);
     d2LogPsi.resize(nwtot);
     for (int i = 0; i < nwtot; ++i)
-      dLogPsi[i] = new ParticleGradient_t(nptcl);
+      dLogPsi[i] = std::make_unique<ParticleGradient_t>(nptcl);
     for (int i = 0; i < nwtot; ++i)
-      d2LogPsi[i] = new ParticleLaplacian_t(nptcl);
+      d2LogPsi[i] = std::make_unique<ParticleLaplacian_t>(nptcl);
   }
 }
 

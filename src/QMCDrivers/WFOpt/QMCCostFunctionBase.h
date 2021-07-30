@@ -310,11 +310,11 @@ protected:
   typedef ParticleSet::ParticleGradient_t ParticleGradient_t;
   typedef ParticleSet::ParticleLaplacian_t ParticleLaplacian_t;
   ///** Fixed  Gradients , \f$\nabla\ln\Psi\f$, components */
-  std::vector<ParticleGradient_t*> dLogPsi;
+  std::vector<std::unique_ptr<ParticleGradient_t>> dLogPsi;
   ///** Fixed  Laplacian , \f$\nabla^2\ln\Psi\f$, components */
-  std::vector<ParticleLaplacian_t*> d2LogPsi;
+  std::vector<std::unique_ptr<ParticleLaplacian_t>> d2LogPsi;
   ///stream for debug
-  std::ostream* debug_stream;
+  std::unique_ptr<std::ostream> debug_stream;
 
   bool checkParameters();
   void updateXmlNodes();

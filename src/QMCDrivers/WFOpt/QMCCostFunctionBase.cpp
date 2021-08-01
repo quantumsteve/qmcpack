@@ -27,6 +27,12 @@
 
 namespace qmcplusplus
 {
+const xmlChar* operator"" _xml(const char* in, size_t)
+{
+  static_assert(std::is_same<xmlChar, unsigned char>::value, "xmlChar must be the same as unsigned char.");
+  return reinterpret_cast<const xmlChar*>(in);
+}
+
 QMCCostFunctionBase::QMCCostFunctionBase(MCWalkerConfiguration& w,
                                          TrialWaveFunction& psi,
                                          QMCHamiltonian& h,
@@ -521,18 +527,18 @@ void QMCCostFunctionBase::updateXmlNodes()
 {
   if (m_doc_out == NULL) //first time, create a document tree and get parameters and attributes to be updated
   {
-    m_doc_out          = xmlNewDoc((const xmlChar*)"1.0");
-    xmlNodePtr qm_root = xmlNewNode(NULL, BAD_CAST "qmcsystem");
+    m_doc_out          = xmlNewDoc("1.0"_xml);
+    xmlNodePtr qm_root = xmlNewNode(NULL, "qmcsystem"_xml);
     xmlAddChild(qm_root, xmlCopyNode(m_wfPtr, 1));
     xmlDocSetRootElement(m_doc_out, qm_root);
     xmlXPathContextPtr acontext = xmlXPathNewContext(m_doc_out);
 
     //check var
-    xmlXPathObjectPtr result = xmlXPathEvalExpression((const xmlChar*)"//var", acontext);
+    xmlXPathObjectPtr result = xmlXPathEvalExpression("//var"_xml, acontext);
     for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
     {
       xmlNodePtr cur = result->nodesetval->nodeTab[iparam];
-      xmlChar* iptr  = xmlGetProp(cur, (const xmlChar*)"id");
+      xmlChar* iptr  = xmlGetProp(cur, "id"_xml);
       if (iptr == NULL)
         continue;
       std::string aname((const char*)iptr);
@@ -545,23 +551,23 @@ void QMCCostFunctionBase::updateXmlNodes()
     }
     xmlXPathFreeObject(result);
     //check radfunc
-    result = xmlXPathEvalExpression((const xmlChar*)"//radfunc", acontext);
+    result = xmlXPathEvalExpression("//radfunc"_xml, acontext);
     for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
     {
       xmlNodePtr cur      = result->nodesetval->nodeTab[iparam];
-      const xmlChar* iptr = xmlGetProp(cur, (const xmlChar*)"id");
+      const xmlChar* iptr = xmlGetProp(cur, "id"_xml);
       if (iptr == NULL)
         continue;
       std::string aname((const char*)iptr);
       std::string expID = aname + "_E";
-      xmlAttrPtr aptr   = xmlHasProp(cur, (const xmlChar*)"exponent");
+      xmlAttrPtr aptr   = xmlHasProp(cur, "exponent"_xml);
       opt_variables_type::iterator oit(OptVariablesForPsi.find(expID));
       if (aptr != NULL && oit != OptVariablesForPsi.end())
       {
         attribNodes[expID] = std::pair<xmlNodePtr, std::string>(cur, "exponent");
       }
       std::string cID = aname + "_C";
-      aptr            = xmlHasProp(cur, (const xmlChar*)"contraction");
+      aptr            = xmlHasProp(cur, "contraction"_xml);
       oit             = OptVariablesForPsi.find(cID);
       if (aptr != NULL && oit != OptVariablesForPsi.end())
       {
@@ -570,15 +576,15 @@ void QMCCostFunctionBase::updateXmlNodes()
     }
     xmlXPathFreeObject(result);
     //check ci
-    result = xmlXPathEvalExpression((const xmlChar*)"//ci", acontext);
+    result = xmlXPathEvalExpression("//ci"_xml, acontext);
     for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
     {
       xmlNodePtr cur      = result->nodesetval->nodeTab[iparam];
-      const xmlChar* iptr = xmlGetProp(cur, (const xmlChar*)"id");
+      const xmlChar* iptr = xmlGetProp(cur, "id"_xml);
       if (iptr == NULL)
         continue;
       std::string aname((const char*)iptr);
-      xmlAttrPtr aptr = xmlHasProp(cur, (const xmlChar*)"coeff");
+      xmlAttrPtr aptr = xmlHasProp(cur, "coeff"_xml);
       opt_variables_type::iterator oit(OptVariablesForPsi.find(aname));
       if (aptr != NULL && oit != OptVariablesForPsi.end())
       {
@@ -587,15 +593,15 @@ void QMCCostFunctionBase::updateXmlNodes()
     }
     xmlXPathFreeObject(result);
     //check csf
-    result = xmlXPathEvalExpression((const xmlChar*)"//csf", acontext);
+    result = xmlXPathEvalExpression("//csf"_xml, acontext);
     for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
     {
       xmlNodePtr cur      = result->nodesetval->nodeTab[iparam];
-      const xmlChar* iptr = xmlGetProp(cur, (const xmlChar*)"id");
+      const xmlChar* iptr = xmlGetProp(cur, "id"_xml);
       if (iptr == NULL)
         continue;
       std::string aname((const char*)iptr);
-      xmlAttrPtr aptr = xmlHasProp(cur, (const xmlChar*)"coeff");
+      xmlAttrPtr aptr = xmlHasProp(cur, "coeff"_xml);
       opt_variables_type::iterator oit(OptVariablesForPsi.find(aname));
       if (aptr != NULL && oit != OptVariablesForPsi.end())
       {
@@ -606,11 +612,11 @@ void QMCCostFunctionBase::updateXmlNodes()
     if (CI_Opt)
     {
       //check multidet
-      result = xmlXPathEvalExpression((const xmlChar*)"//detlist", acontext);
+      result = xmlXPathEvalExpression("//detlist"_xml, acontext);
       for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
       {
         xmlNodePtr cur = result->nodesetval->nodeTab[iparam];
-        xmlSetProp(cur, (const xmlChar*)"opt_coeffs", (const xmlChar*)newh5.c_str());
+        xmlSetProp(cur, "opt_coeffs"_xml, (const xmlChar*)newh5.c_str());
       }
       xmlXPathFreeObject(result);
     }
@@ -702,7 +708,7 @@ void QMCCostFunctionBase::updateXmlNodes()
             vout.setf(std::ios::scientific, std::ios::floatfield);
             vout.precision(16);
             vout << (*vTarget).second;
-            xmlSetProp(cur, (const xmlChar*)"c", (const xmlChar*)vout.str().c_str());
+            xmlSetProp(cur, "c"_xml, (const xmlChar*)vout.str().c_str());
           }
         }
         cur = cur->next;
@@ -811,13 +817,13 @@ void QMCCostFunctionBase::addCJParams(xmlXPathContextPtr acontext, const char* c
       // F variable tag isn't found; build the tag.
       if (!Ftag_found)
       {
-        xmlNodeAddContent(cur, (const xmlChar*)"\n      ");
-        xmlNodePtr F_tag = xmlNewChild(cur, NULL, (const xmlChar*)"var", NULL);
-        xmlSetProp(F_tag, (const xmlChar*)"name", (const xmlChar*)"F");
-        xmlSetProp(F_tag, (const xmlChar*)"opt", (const xmlChar*)"true");
-        xmlNodeSetContent(F_tag, (const xmlChar*)" ");
+        xmlNodeAddContent(cur, "\n      "_xml);
+        xmlNodePtr F_tag = xmlNewChild(cur, NULL, "var"_xml, NULL);
+        xmlSetProp(F_tag, "name"_xml, "F"_xml);
+        xmlSetProp(F_tag, "opt"_xml, "true"_xml);
+        xmlNodeSetContent(F_tag, " "_xml);
         coeffNodes["cj_F"] = F_tag;
-        xmlNodeAddContent(cur, (const xmlChar*)"\n    ");
+        xmlNodeAddContent(cur, "\n    "_xml);
       }
 
       cur2 = cur->xmlChildrenNode;
@@ -841,9 +847,9 @@ void QMCCostFunctionBase::addCJParams(xmlXPathContextPtr acontext, const char* c
           if (atype2 == "voronoi")
           {
             // set property to normalized_gaussian, add reference, remove source
-            xmlUnsetProp(cur, (const xmlChar*)"source");
-            xmlSetProp(cur2, (const xmlChar*)"type", (const xmlChar*)"normalized_gaussian");
-            xmlSetProp(cur2, (const xmlChar*)"reference_id", (const xmlChar*)ref_id.c_str());
+            xmlUnsetProp(cur, "source"_xml);
+            xmlSetProp(cur2, "type"_xml, "normalized_gaussian"_xml);
+            xmlSetProp(cur2, "reference_id"_xml, (const xmlChar*)ref_id.c_str());
             // remove existing children
             xmlNodePtr child = cur2->xmlChildrenNode;
             while (child != NULL)
@@ -861,15 +867,15 @@ void QMCCostFunctionBase::addCJParams(xmlXPathContextPtr acontext, const char* c
               std::string opt = (gid != ref_id) ? "true" : "false";
 
               // create function tag, set id
-              xmlNodeAddContent(cur2, (const xmlChar*)"\n        ");
-              xmlNodePtr function_tag = xmlNewChild(cur2, NULL, (const xmlChar*)"function", NULL);
-              xmlNewProp(function_tag, (const xmlChar*)"id", (const xmlChar*)gid.c_str());
-              xmlNodeAddContent(function_tag, (const xmlChar*)"\n          ");
+              xmlNodeAddContent(cur2, "\n        "_xml);
+              xmlNodePtr function_tag = xmlNewChild(cur2, NULL, "function"_xml, NULL);
+              xmlNewProp(function_tag, "id"_xml, (const xmlChar*)gid.c_str());
+              xmlNodeAddContent(function_tag, "\n          "_xml);
               // create A tag
-              xmlNodePtr A_tag = xmlNewChild(function_tag, NULL, (const xmlChar*)"var", NULL);
-              xmlNodeAddContent(function_tag, (const xmlChar*)"\n          ");
-              xmlNewProp(A_tag, (const xmlChar*)"name", (const xmlChar*)"A");
-              xmlNewProp(A_tag, (const xmlChar*)"opt", (const xmlChar*)opt.c_str());
+              xmlNodePtr A_tag = xmlNewChild(function_tag, NULL, "var"_xml, NULL);
+              xmlNodeAddContent(function_tag, "\n          "_xml);
+              xmlNewProp(A_tag, "name"_xml, "A"_xml);
+              xmlNewProp(A_tag, "opt"_xml, (const xmlChar*)opt.c_str());
               os.str("");
               if (gid == ref_id)
               {
@@ -884,10 +890,10 @@ void QMCCostFunctionBase::addCJParams(xmlXPathContextPtr acontext, const char* c
               xmlNodeSetContent(A_tag, (const xmlChar*)(os.str().c_str()));
 
               // create B tag
-              xmlNodePtr B_tag = xmlNewChild(function_tag, NULL, (const xmlChar*)"var", NULL);
-              xmlNodeAddContent(function_tag, (const xmlChar*)"\n          ");
-              xmlNewProp(B_tag, (const xmlChar*)"name", (const xmlChar*)"B");
-              xmlNewProp(B_tag, (const xmlChar*)"opt", (const xmlChar*)opt.c_str());
+              xmlNodePtr B_tag = xmlNewChild(function_tag, NULL, "var"_xml, NULL);
+              xmlNodeAddContent(function_tag, "\n          "_xml);
+              xmlNewProp(B_tag, "name"_xml, "B"_xml);
+              xmlNewProp(B_tag, "opt"_xml, (const xmlChar*)opt.c_str());
               os.str("");
               if (gid == ref_id)
               {
@@ -900,10 +906,10 @@ void QMCCostFunctionBase::addCJParams(xmlXPathContextPtr acontext, const char* c
               xmlNodeSetContent(B_tag, (const xmlChar*)(os.str().c_str()));
 
               // create C tag
-              xmlNodePtr C_tag = xmlNewChild(function_tag, NULL, (const xmlChar*)"var", NULL);
-              xmlNodeAddContent(function_tag, (const xmlChar*)"\n        ");
-              xmlNewProp(C_tag, (const xmlChar*)"name", (const xmlChar*)"C");
-              xmlNewProp(C_tag, (const xmlChar*)"opt", (const xmlChar*)opt.c_str());
+              xmlNodePtr C_tag = xmlNewChild(function_tag, NULL, "var"_xml, NULL);
+              xmlNodeAddContent(function_tag, "\n        "_xml);
+              xmlNewProp(C_tag, "name"_xml, "C"_xml);
+              xmlNewProp(C_tag, "opt"_xml, (const xmlChar*)opt.c_str());
               os.str("");
               if (gid == ref_id)
               {
@@ -914,7 +920,7 @@ void QMCCostFunctionBase::addCJParams(xmlXPathContextPtr acontext, const char* c
                 os << " ";
               xmlNodeSetContent(C_tag, (const xmlChar*)(os.str().c_str()));
             }
-            xmlNodeAddContent(cur2, (const xmlChar*)"\n      ");
+            xmlNodeAddContent(cur2, "\n      "_xml);
           }
 
           // register the optimizable variables for each function
@@ -1017,7 +1023,7 @@ void QMCCostFunctionBase::printCJParams(xmlNodePtr cur, std::string& rname)
     // assign to tag
     xmlNodePtr cur2 = cur->children;
     xmlNodeSetContent(cur2, (const xmlChar*)(os.str().c_str()));
-    xmlNodeAddContent(cur2, (const xmlChar*)"\n      ");
+    xmlNodeAddContent(cur2, "\n      "_xml);
   }
   // gaussian function parameters A, B, C
   else

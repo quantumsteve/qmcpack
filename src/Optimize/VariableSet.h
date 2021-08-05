@@ -37,6 +37,27 @@ enum
   BACKFLOW_P   //Backflow parameters
 };
 
+using xmlstring = std::basic_string<xmlChar>;
+
+/* Compare S1 and S2, returning less than, equal to or
+   greater than zero if S1 is lexicographically less than,
+   equal to or greater than S2.  */
+int strcmp(const char* p1, const xmlChar* p2)
+{
+  const unsigned char* s1 = (const unsigned char*)p1;
+  const unsigned char* s2 = p2;
+  unsigned char c1, c2;
+  do
+  {
+    c1 = *s1++;
+    c2 = *s2++;
+    if (c1 == '\0')
+      return c1 - c2;
+  } while (c1 == c2);
+
+  return c1 - c2;
+}
+
 /** class to handle a set of variables that can be modified during optimizations
  *
  * A serialized container of named variables.
@@ -99,6 +120,12 @@ struct VariableSet
   {
     return std::find_if(NameAndValue.begin(), NameAndValue.end(),
                         [&vname](const auto& it) { return it.first == vname; });
+  }
+
+  inline iterator find(const xmlstring& vname)
+  {
+    return std::find_if(NameAndValue.begin(), NameAndValue.end(),
+                        [&vname](const auto& it) { return strcmp(it.first.data(), vname.data()) == 0; });
   }
 
   /** return the Index vaule for the named parameter

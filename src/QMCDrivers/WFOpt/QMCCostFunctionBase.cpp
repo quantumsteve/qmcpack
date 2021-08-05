@@ -49,6 +49,10 @@ const xmlChar* operator"" _xml(const char* in, size_t) { return cstr2xml(in); }
 
 using xmlCharUptr = std::unique_ptr<xmlChar, decltype(xmlFree)>;
 
+using xmlXPathObjectUPtr = std::unique_ptr<xmlXPathObject, decltype(&xmlXPathFreeObject)>;
+
+using xmlXPathContextUPtr = std::unique_ptr<xmlXPathContext, decltype(&xmlXPathFreeContext)>;
+
 QMCCostFunctionBase::QMCCostFunctionBase(MCWalkerConfiguration& w,
                                          TrialWaveFunction& psi,
                                          QMCHamiltonian& h,
@@ -528,10 +532,10 @@ void QMCCostFunctionBase::updateXmlNodes()
     xmlNodePtr qm_root = xmlNewNode(NULL, "qmcsystem"_xml);
     xmlAddChild(qm_root, xmlCopyNode(m_wfPtr, 1));
     xmlDocSetRootElement(m_doc_out.get(), qm_root);
-    xmlXPathContextPtr acontext = xmlXPathNewContext(m_doc_out.get());
+    auto acontext = xmlXPathContextUPtr(xmlXPathNewContext(m_doc_out.get()), xmlXPathFreeContext);
 
     //check var
-    xmlXPathObjectPtr result = xmlXPathEvalExpression("//var"_xml, acontext);
+    auto result = xmlXPathObjectUPtr(xmlXPathEvalExpression("//var"_xml, acontext.get()), xmlXPathFreeObject);
     for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
     {
       xmlNodePtr cur = result->nodesetval->nodeTab[iparam];
@@ -545,9 +549,8 @@ void QMCCostFunctionBase::updateXmlNodes()
         paramNodes[aname] = cur;
       }
     }
-    xmlXPathFreeObject(result);
     //check radfunc
-    result = xmlXPathEvalExpression("//radfunc"_xml, acontext);
+    result.reset(xmlXPathEvalExpression("//radfunc"_xml, acontext.get()));
     for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
     {
       xmlNodePtr cur      = result->nodesetval->nodeTab[iparam];
@@ -570,9 +573,8 @@ void QMCCostFunctionBase::updateXmlNodes()
         attribNodes[cID] = std::pair<xmlNodePtr, std::string>(cur, "contraction");
       }
     }
-    xmlXPathFreeObject(result);
     //check ci
-    result = xmlXPathEvalExpression("//ci"_xml, acontext);
+    result.reset(xmlXPathEvalExpression("//ci"_xml, acontext.get()));
     for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
     {
       xmlNodePtr cur      = result->nodesetval->nodeTab[iparam];
@@ -587,9 +589,7 @@ void QMCCostFunctionBase::updateXmlNodes()
         attribNodes[aname] = std::pair<xmlNodePtr, std::string>(cur, "coeff");
       }
     }
-    xmlXPathFreeObject(result);
-    //check csf
-    result = xmlXPathEvalExpression("//csf"_xml, acontext);
+    result.reset(xmlXPathEvalExpression("//csf"_xml, acontext.get()));
     for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
     {
       xmlNodePtr cur      = result->nodesetval->nodeTab[iparam];
@@ -604,23 +604,20 @@ void QMCCostFunctionBase::updateXmlNodes()
         attribNodes[aname] = std::pair<xmlNodePtr, std::string>(cur, "coeff");
       }
     }
-    xmlXPathFreeObject(result);
     if (CI_Opt)
     {
       //check multidet
-      result = xmlXPathEvalExpression("//detlist"_xml, acontext);
+      result.reset(xmlXPathEvalExpression("//detlist"_xml, acontext.get()));
       for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
       {
         xmlNodePtr cur = result->nodesetval->nodeTab[iparam];
         xmlSetProp(cur, "opt_coeffs"_xml, cstr2xml(newh5));
       }
-      xmlXPathFreeObject(result);
     }
 
-    addCoefficients(acontext, "//coefficient");
-    addCoefficients(acontext, "//coefficients");
-    addCJParams(acontext, "//jastrow");
-    xmlXPathFreeContext(acontext);
+    addCoefficients(acontext.get(), "//coefficient");
+    addCoefficients(acontext.get(), "//coefficients");
+    addCJParams(acontext.get(), "//jastrow");
   }
   //     Psi.reportStatus(app_log());
   for (auto& pit : paramNodes)
@@ -711,7 +708,7 @@ void QMCCostFunctionBase::updateXmlNodes()
  */
 void QMCCostFunctionBase::addCoefficients(xmlXPathContextPtr acontext, const char* cname)
 {
-  xmlXPathObjectPtr result = xmlXPathEvalExpression(cstr2xml(cname), acontext);
+  auto result = xmlXPathObjectUPtr(xmlXPathEvalExpression(cstr2xml(cname), acontext), xmlXPathFreeObject);
   for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
   {
     xmlNodePtr cur = result->nodesetval->nodeTab[iparam];
@@ -734,26 +731,22 @@ void QMCCostFunctionBase::addCoefficients(xmlXPathContextPtr acontext, const cha
     else
     {
       //check if any optimizables contains the id of coefficients
-      bool notlisted = true;
-      opt_variables_type::iterator oit(OptVariablesForPsi.begin()), oit_end(OptVariablesForPsi.end());
-      while (notlisted && oit != oit_end)
+      for (auto& oit : OptVariablesForPsi)
       {
-        const std::string& oname((*oit).first);
-        notlisted = (oname.find(aname) >= oname.size());
-        ++oit;
-      }
-      if (!notlisted)
-      {
-        coeffNodes[aname] = cur;
+        const std::string& oname(oit.first);
+        if (oname.find(aname) < oname.size())
+        {
+          coeffNodes[aname] = cur;
+          break;
+        }
       }
     }
   }
-  xmlXPathFreeObject(result);
 }
 
 void QMCCostFunctionBase::addCJParams(xmlXPathContextPtr acontext, const char* cname)
 {
-  xmlXPathObjectPtr result = xmlXPathEvalExpression(cstr2xml(cname), acontext);
+  auto result = xmlXPathObjectUPtr(xmlXPathEvalExpression(cstr2xml(cname), acontext), xmlXPathFreeObject);
   for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
   {
     // check that we're in a counting jastrow tag space
@@ -936,17 +929,14 @@ void QMCCostFunctionBase::addCJParams(xmlXPathContextPtr acontext, const char* c
                 if (tname4 == "var" && (aopt4 == "true" || aopt4 == "yes"))
                 {
                   std::string varname = "cj_" + fid + "_" + aname4;
-                  bool notlisted      = true;
-                  opt_variables_type::iterator oit(OptVariables.begin()), oit_end(OptVariables.end());
-                  while (notlisted && oit != oit_end)
+                  for (auto& oit : OptVariables)
                   {
-                    const std::string& oname((*oit).first);
-                    notlisted = (oname.find(varname.substr(3)) >= oname.size());
-                    ++oit;
-                  }
-                  if (!notlisted)
-                  {
-                    coeffNodes[varname] = cur4;
+                    const std::string& oname(oit.first);
+                    if (oname.find(varname.substr(3)) < oname.size())
+                    {
+                      coeffNodes[varname] = cur4;
+                      break;
+                    }
                   }
                 }
                 cur4 = cur4->next;
@@ -959,23 +949,21 @@ void QMCCostFunctionBase::addCJParams(xmlXPathContextPtr acontext, const char* c
       }
     }
   }
-  xmlXPathFreeObject(result);
 }
 
 
 void QMCCostFunctionBase::printCJParams(xmlNodePtr cur, std::string& rname)
 {
-  opt_variables_type::iterator vit(OptVariables.begin());
   // F matrix variables
   if (rname.find("cj_F") < rname.size())
   {
     // get a vector of pairs with f matrix names, values
     std::vector<Return_rt> f_vals;
-    for (auto vit = OptVariables.begin(); vit != OptVariables.end(); ++vit)
+    for (auto& vit : OptVariables)
     {
-      if ((*vit).first.find("F_") == 0)
+      if (vit.first.find("F_") == 0)
       {
-        Return_rt fval = std::real(vit->second);
+        Return_rt fval = std::real(vit.second);
         f_vals.push_back(fval);
       }
     }

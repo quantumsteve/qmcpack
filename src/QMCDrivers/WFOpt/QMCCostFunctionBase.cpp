@@ -384,7 +384,6 @@ bool QMCCostFunctionBase::put(xmlNodePtr q)
   std::map<std::string, std::vector<std::string>> equalConstraints;
   std::vector<std::string> idtag;
   xmlNodePtr cur = qsave->children;
-  int pid        = myComm->rank();
   while (cur != NULL)
   {
     std::string cname(xml2cstr(cur->name));
@@ -543,7 +542,7 @@ void QMCCostFunctionBase::updateXmlNodes()
       if (iptr == nullptr)
         continue;
       std::string aname(xml2cstr(iptr.get()));
-      opt_variables_type::iterator oit(OptVariablesForPsi.find(aname));
+      auto oit = OptVariablesForPsi.find(aname);
       if (oit != OptVariablesForPsi.end())
       {
         paramNodes[aname] = cur;
@@ -558,19 +557,26 @@ void QMCCostFunctionBase::updateXmlNodes()
       if (iptr == nullptr)
         continue;
       std::string aname(xml2cstr(iptr.get()));
-      std::string expID = aname + "_E";
       xmlAttrPtr aptr   = xmlHasProp(cur, "exponent"_xml);
-      auto oit          = OptVariablesForPsi.find(expID);
-      if (aptr != nullptr && oit != OptVariablesForPsi.end())
+
+      if (aptr != nullptr)
       {
-        attribNodes[expID] = std::pair<xmlNodePtr, std::string>(cur, "exponent");
+        std::string expID = aname + "_E";
+        auto oit          = OptVariablesForPsi.find(expID);
+        if (oit != OptVariablesForPsi.end())
+        {
+          attribNodes[expID] = std::pair<xmlNodePtr, std::string>(cur, "exponent");
+        }
       }
-      std::string cID = aname + "_C";
       aptr            = xmlHasProp(cur, "contraction"_xml);
-      oit             = OptVariablesForPsi.find(cID);
-      if (aptr != NULL && oit != OptVariablesForPsi.end())
+      if (aptr != nullptr)
       {
-        attribNodes[cID] = std::pair<xmlNodePtr, std::string>(cur, "contraction");
+        std::string cID = aname + "_C";
+        auto oit        = OptVariablesForPsi.find(cID);
+        if (oit != OptVariablesForPsi.end())
+        {
+          attribNodes[cID] = std::pair<xmlNodePtr, std::string>(cur, "contraction");
+        }
       }
     }
     //check ci
@@ -581,12 +587,15 @@ void QMCCostFunctionBase::updateXmlNodes()
       auto iptr           = xmlCharUptr(xmlGetProp(cur, "id"_xml), xmlFree);
       if (iptr == nullptr)
         continue;
-      std::string aname(xml2cstr(iptr.get()));
       xmlAttrPtr aptr = xmlHasProp(cur, "coeff"_xml);
-      auto oit        = OptVariablesForPsi.find(aname);
-      if (aptr != nullptr && oit != OptVariablesForPsi.end())
+      if (aptr)
       {
-        attribNodes[aname] = std::pair<xmlNodePtr, std::string>(cur, "coeff");
+        std::string aname(xml2cstr(iptr.get()));
+        auto oit = OptVariablesForPsi.find(aname);
+        if (oit != OptVariablesForPsi.end())
+        {
+          attribNodes[aname] = std::pair<xmlNodePtr, std::string>(cur, "coeff");
+        }
       }
     }
     result.reset(xmlXPathEvalExpression("//csf"_xml, acontext.get()));
@@ -596,12 +605,15 @@ void QMCCostFunctionBase::updateXmlNodes()
       auto iptr           = xmlCharUptr(xmlGetProp(cur, "id"_xml), xmlFree);
       if (iptr == nullptr)
         continue;
-      std::string aname(xml2cstr(iptr.get()));
       xmlAttrPtr aptr = xmlHasProp(cur, "coeff"_xml);
-      opt_variables_type::iterator oit(OptVariablesForPsi.find(aname));
-      if (aptr != NULL && oit != OptVariablesForPsi.end())
+      if (aptr)
       {
-        attribNodes[aname] = std::pair<xmlNodePtr, std::string>(cur, "coeff");
+        std::string aname(xml2cstr(iptr.get()));
+        auto oit = OptVariablesForPsi.find(aname);
+        if (oit != OptVariablesForPsi.end())
+        {
+          attribNodes[aname] = std::pair<xmlNodePtr, std::string>(cur, "coeff");
+        }
       }
     }
     if (CI_Opt)

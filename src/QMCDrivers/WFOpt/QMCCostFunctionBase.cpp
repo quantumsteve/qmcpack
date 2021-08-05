@@ -378,7 +378,6 @@ bool QMCCostFunctionBase::put(xmlNodePtr q)
   std::vector<xmlNodePtr> cset;
   std::vector<std::string> excluded;
   std::map<std::string, std::vector<std::string>> equalConstraints;
-  std::map<std::string, std::vector<std::string>*> negateConstraints;
   std::vector<std::string> idtag;
   xmlNodePtr cur = qsave->children;
   int pid        = myComm->rank();

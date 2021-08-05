@@ -43,6 +43,9 @@ class DescentEngine;
  * generated from VMC.
  */
 
+using xmlDocUPtr  = std::unique_ptr<xmlDoc, decltype(&xmlFreeDoc)>;
+using xmlNodeUPtr = std::unique_ptr<xmlNode, decltype(&xmlFreeNode)>;
+
 class QMCCostFunctionBase : public CostFunctionBase<QMCTraits::RealType>, public MPIObjectBase
 {
 public:
@@ -276,7 +279,7 @@ protected:
   ///xml node to be dumped
   xmlNodePtr m_wfPtr;
   ///document node to be dumped
-  xmlDocPtr m_doc_out;
+  xmlDocUPtr m_doc_out;
   ///parameters to be updated
   std::map<std::string, xmlNodePtr> paramNodes;
   ///coefficients to be updated

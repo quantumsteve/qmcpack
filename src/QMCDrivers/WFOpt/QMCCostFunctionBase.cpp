@@ -74,8 +74,8 @@ QMCCostFunctionBase::QMCCostFunctionBase(MCWalkerConfiguration& w,
       targetExcited(false),
       omega_shift(0.0),
       msg_stream(0),
-      m_wfPtr(NULL),
-      m_doc_out(NULL),
+      m_wfPtr(nullptr),
+      m_doc_out(nullptr, xmlFreeDoc),
       includeNonlocalH("no"),
       debug_stream(0)
 {
@@ -101,8 +101,6 @@ QMCCostFunctionBase::~QMCCostFunctionBase()
 {
   delete_iter(dLogPsi.begin(), dLogPsi.end());
   delete_iter(d2LogPsi.begin(), d2LogPsi.end());
-  if (m_doc_out != NULL)
-    xmlFreeDoc(m_doc_out);
   if (debug_stream)
     delete debug_stream;
 }
@@ -224,7 +222,7 @@ void QMCCostFunctionBase::Report()
       sprintf(newxml, "%s.opt.xml", RootName.c_str());
     else
       sprintf(newxml, "%s.opt.%d.xml", RootName.c_str(), ReportCounter);
-    xmlSaveFormatFile(newxml, m_doc_out, 1);
+    xmlSaveFormatFile(newxml, m_doc_out.get(), 1);
     if (msg_stream)
     {
       msg_stream->precision(8);
@@ -260,7 +258,7 @@ void QMCCostFunctionBase::reportParameters()
     OptVariables.print(*msg_stream);
     *msg_stream << "  </optVariables>" << std::endl;
     updateXmlNodes();
-    xmlSaveFormatFile(newxml, m_doc_out, 1);
+    xmlSaveFormatFile(newxml, m_doc_out.get(), 1);
   }
 }
 /** This function stores optimized CI coefficients in HDF5 
@@ -524,11 +522,11 @@ void QMCCostFunctionBase::updateXmlNodes()
 {
   if (m_doc_out == NULL) //first time, create a document tree and get parameters and attributes to be updated
   {
-    m_doc_out          = xmlNewDoc("1.0"_xml);
+    m_doc_out.reset(xmlNewDoc("1.0"_xml));
     xmlNodePtr qm_root = xmlNewNode(NULL, "qmcsystem"_xml);
     xmlAddChild(qm_root, xmlCopyNode(m_wfPtr, 1));
-    xmlDocSetRootElement(m_doc_out, qm_root);
-    xmlXPathContextPtr acontext = xmlXPathNewContext(m_doc_out);
+    xmlDocSetRootElement(m_doc_out.get(), qm_root);
+    xmlXPathContextPtr acontext = xmlXPathNewContext(m_doc_out.get());
 
     //check var
     xmlXPathObjectPtr result = xmlXPathEvalExpression("//var"_xml, acontext);

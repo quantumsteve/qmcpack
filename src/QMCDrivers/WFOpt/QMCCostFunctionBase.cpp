@@ -377,7 +377,7 @@ bool QMCCostFunctionBase::put(xmlNodePtr q)
   //Estimators.put(q);
   std::vector<xmlNodePtr> cset;
   std::vector<std::string> excluded;
-  std::map<std::string, std::vector<std::string>*> equalConstraints;
+  std::map<std::string, std::vector<std::string>> equalConstraints;
   std::map<std::string, std::vector<std::string>*> negateConstraints;
   std::vector<std::string> idtag;
   xmlNodePtr cur = qsave->children;
@@ -412,18 +412,10 @@ bool QMCCostFunctionBase::put(xmlNodePtr q)
       pAttrib.put(cur);
       if (ctype == "equal" || ctype == "=")
       {
-        std::map<std::string, std::vector<std::string>*>::iterator eit(equalConstraints.find(s));
-        std::vector<std::string>* eqSet = 0;
-        if (eit == equalConstraints.end())
-        {
-          eqSet               = new std::vector<std::string>;
-          equalConstraints[s] = eqSet;
-        }
-        else
-          eqSet = (*eit).second;
+        auto& eqSet = equalConstraints[s];
         std::vector<std::string> econt;
         putContent(econt, cur);
-        eqSet->insert(eqSet->end(), econt.begin(), econt.end());
+        eqSet.insert(eqSet.end(), econt.begin(), econt.end());
       }
     }
     cur = cur->next;
@@ -440,17 +432,12 @@ bool QMCCostFunctionBase::put(xmlNodePtr q)
   //now, set up the real variable list for optimization
   //check <equal>
   int nc = 0;
-  if (equalConstraints.size())
+  for (auto& eit : equalConstraints)
   {
-    std::map<std::string, std::vector<std::string>*>::iterator eit(equalConstraints.begin());
-    while (eit != equalConstraints.end())
-    {
-      nc += (*eit).second->size();
-      //actiave the active variable even though it is probably unnecessary
-      OptVariablesForPsi.activate((*eit).second->begin(), (*eit).second->end(), false);
-      excluded.insert(excluded.end(), (*eit).second->begin(), (*eit).second->end());
-      ++eit;
-    }
+    nc += eit.second.size();
+    //actiave the active variable even though it is probably unnecessary
+    OptVariablesForPsi.activate(eit.second.begin(), eit.second.end(), false);
+    excluded.insert(excluded.end(), eit.second.begin(), eit.second.end());
   }
   //build OptVariables which is equal to or identical to OptVariablesForPsi
   //disable the variables that are equal to a variable
@@ -471,13 +458,12 @@ bool QMCCostFunctionBase::put(xmlNodePtr q)
       equalVarMap.push_back(TinyVector<int, 2>(bigloc, i));
     }
     //add <equal/>
-    std::map<std::string, std::vector<std::string>*>::iterator eit(equalConstraints.begin());
-    while (eit != equalConstraints.end())
+    for (auto& eit : equalConstraints)
     {
-      int loc = OptVariables.getIndex((*eit).first);
+      int loc = OptVariables.getIndex(eit.first);
       if (loc >= 0)
       {
-        const std::vector<std::string>& elist(*((*eit).second));
+        const std::vector<std::string>& elist = eit.second;
         for (int i = 0; i < elist.size(); ++i)
         {
           int bigloc = OptVariablesForPsi.getIndex(elist[i]);
@@ -486,9 +472,6 @@ bool QMCCostFunctionBase::put(xmlNodePtr q)
           equalVarMap.push_back(TinyVector<int, 2>(bigloc, loc));
         }
       }
-      //remove std::vector<std::string>
-      delete (*eit).second;
-      ++eit;
     }
   }
   //get the indices
@@ -642,52 +625,44 @@ void QMCCostFunctionBase::updateXmlNodes()
     xmlXPathFreeContext(acontext);
   }
   //     Psi.reportStatus(app_log());
-  std::map<std::string, xmlNodePtr>::iterator pit(paramNodes.begin()), pit_end(paramNodes.end());
-  while (pit != pit_end)
+  for (auto& pit : paramNodes)
   {
     //FIXME real value is forced here to makde sure that the code builds
-    Return_rt v = std::real(OptVariablesForPsi[(*pit).first]);
-    getContent(v, (*pit).second);
+    Return_rt v = std::real(OptVariablesForPsi[pit.first]);
+    getContent(v, pit.second);
     //         vout <<(*pit).second<< std::endl;
-    ++pit;
   }
-  std::map<std::string, std::pair<xmlNodePtr, std::string>>::iterator ait(attribNodes.begin()),
-      ait_end(attribNodes.end());
-  while (ait != ait_end)
+  for (auto& ait : attribNodes)
   {
     std::ostringstream vout;
     vout.setf(std::ios::scientific, std::ios::floatfield);
     vout.precision(16);
-    vout << OptVariablesForPsi[(*ait).first];
-    xmlSetProp((*ait).second.first, cstr2xml(ait->second.second), cstr2xml(vout.str()));
-    ++ait;
+    vout << OptVariablesForPsi[ait.first];
+    xmlSetProp(ait.second.first, cstr2xml(ait.second.second), cstr2xml(vout.str()));
   }
-  std::map<std::string, xmlNodePtr>::iterator cit(coeffNodes.begin()), cit_end(coeffNodes.end());
-  while (cit != cit_end)
+  for (auto& cit : coeffNodes)
   {
-    std::string rname((*cit).first);
+    std::string rname(cit.first);
     OhmmsAttributeSet cAttrib;
     std::string datatype("none");
     std::string aname("0");
     cAttrib.add(datatype, "type");
     cAttrib.add(aname, "id");
-    cAttrib.put((*cit).second);
+    cAttrib.put(cit.second);
     if (datatype == "Array")
     {
       //
       aname.append("_");
-      opt_variables_type::iterator vit(OptVariablesForPsi.begin());
       std::vector<Return_rt> c;
-      while (vit != OptVariablesForPsi.end())
+      for (auto& vit : OptVariablesForPsi)
       {
-        if ((*vit).first.find(aname) == 0)
+        if (vit.first.find(aname) == 0)
         {
           //FIXME real value is forced here to makde sure that the code builds
-          c.push_back(std::real((*vit).second));
+          c.push_back(std::real(vit.second));
         }
-        ++vit;
       }
-      xmlNodePtr contentPtr = cit->second;
+      xmlNodePtr contentPtr = cit.second;
       if (xmlNodeIsText(contentPtr->children))
         contentPtr = contentPtr->children;
       getContent(c, contentPtr);
@@ -695,11 +670,11 @@ void QMCCostFunctionBase::updateXmlNodes()
     // counting jastrow variables
     else if (rname.find("cj_") == 0)
     {
-      printCJParams(cit->second, rname);
+      printCJParams(cit.second, rname);
     }
     else
     {
-      xmlNodePtr cur = (*cit).second->children;
+      xmlNodePtr cur = cit.second->children;
       while (cur != NULL)
       {
         std::string cname(xml2cstr(cur->name));
@@ -716,7 +691,7 @@ void QMCCostFunctionBase::updateXmlNodes()
             sprintf(lambda_id, "%s_%d", rname.c_str(), i);
           else
             sprintf(lambda_id, "%s_%d_%d", rname.c_str(), i, j);
-          opt_variables_type::iterator vTarget(OptVariablesForPsi.find(lambda_id));
+          auto vTarget = OptVariablesForPsi.find(lambda_id);
           if (vTarget != OptVariablesForPsi.end())
           {
             std::ostringstream vout;
@@ -729,7 +704,6 @@ void QMCCostFunctionBase::updateXmlNodes()
         cur = cur->next;
       }
     }
-    ++cit;
   }
 }
 
@@ -820,10 +794,9 @@ void QMCCostFunctionBase::addCJParams(xmlXPathContextPtr acontext, const char* c
       }
 
       // count the total number of registered F matrix variables
-      opt_variables_type::iterator oit(OptVariables.begin()), oit_end(OptVariables.end());
-      for (; oit != oit_end; ++oit)
+      for (auto& oit : OptVariables)
       {
-        const std::string& oname((*oit).first);
+        const std::string& oname(oit.first);
         if (oname.find("F_") == 0)
           ++Fnum;
       }

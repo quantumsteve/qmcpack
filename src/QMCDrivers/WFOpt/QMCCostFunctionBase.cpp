@@ -47,6 +47,8 @@ const xmlChar* cstr2xml(const std::string& in) { return cstr2xml(in.c_str()); }
 
 const xmlChar* operator"" _xml(const char* in, size_t) { return cstr2xml(in); }
 
+using xmlCharUptr = std::unique_ptr<xmlChar, decltype(xmlFree)>;
+
 QMCCostFunctionBase::QMCCostFunctionBase(MCWalkerConfiguration& w,
                                          TrialWaveFunction& psi,
                                          QMCHamiltonian& h,
@@ -261,18 +263,18 @@ void QMCCostFunctionBase::reportParameters()
     xmlSaveFormatFile(newxml, m_doc_out.get(), 1);
   }
 }
-/** This function stores optimized CI coefficients in HDF5 
+/** This function stores optimized CI coefficients in HDF5
   * Other parameters (Jastors, orbitals), can also be stored to H5 from this function
   * This function should be called before reportParameters()
   * Since it is needed to call updateXmlNodes() and xmlSaveFormatFile()
-  * While it is possible to call updateXmlNodes() from QMCLinearOptimize.cpp 
-  * It is not clean to call xmlSaveFormatFile() from QMCLinearOptimize.cpp 
+  * While it is possible to call updateXmlNodes() from QMCLinearOptimize.cpp
+  * It is not clean to call xmlSaveFormatFile() from QMCLinearOptimize.cpp
   *
   * @param OptVariables.size() OptVariables.name(i) OptVariables[i]
-  * 
+  *
   * OptVariables.size(): contains the total number of Optimized variables (not Only CI coeff)
-  * OptVariables.name(i): the tag of the optimized variable. To store we use the name of the variable 
-  * OptVariables[i]: The new value of the optimized variable 
+  * OptVariables.name(i): the tag of the optimized variable. To store we use the name of the variable
+  * OptVariables[i]: The new value of the optimized variable
 */
 void QMCCostFunctionBase::reportParametersH5()
 {
@@ -533,11 +535,10 @@ void QMCCostFunctionBase::updateXmlNodes()
     for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
     {
       xmlNodePtr cur = result->nodesetval->nodeTab[iparam];
-      xmlChar* iptr  = xmlGetProp(cur, "id"_xml);
-      if (iptr == NULL)
+      auto iptr      = xmlCharUptr(xmlGetProp(cur, "id"_xml), xmlFree);
+      if (iptr == nullptr)
         continue;
-      std::string aname(xml2cstr(iptr));
-      xmlFree(iptr);
+      std::string aname(xml2cstr(iptr.get()));
       opt_variables_type::iterator oit(OptVariablesForPsi.find(aname));
       if (oit != OptVariablesForPsi.end())
       {
@@ -550,14 +551,14 @@ void QMCCostFunctionBase::updateXmlNodes()
     for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
     {
       xmlNodePtr cur      = result->nodesetval->nodeTab[iparam];
-      const xmlChar* iptr = xmlGetProp(cur, "id"_xml);
-      if (iptr == NULL)
+      auto iptr           = xmlCharUptr(xmlGetProp(cur, "id"_xml), xmlFree);
+      if (iptr == nullptr)
         continue;
-      std::string aname(xml2cstr(iptr));
+      std::string aname(xml2cstr(iptr.get()));
       std::string expID = aname + "_E";
       xmlAttrPtr aptr   = xmlHasProp(cur, "exponent"_xml);
-      opt_variables_type::iterator oit(OptVariablesForPsi.find(expID));
-      if (aptr != NULL && oit != OptVariablesForPsi.end())
+      auto oit          = OptVariablesForPsi.find(expID);
+      if (aptr != nullptr && oit != OptVariablesForPsi.end())
       {
         attribNodes[expID] = std::pair<xmlNodePtr, std::string>(cur, "exponent");
       }
@@ -575,13 +576,13 @@ void QMCCostFunctionBase::updateXmlNodes()
     for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
     {
       xmlNodePtr cur      = result->nodesetval->nodeTab[iparam];
-      const xmlChar* iptr = xmlGetProp(cur, "id"_xml);
-      if (iptr == NULL)
+      auto iptr           = xmlCharUptr(xmlGetProp(cur, "id"_xml), xmlFree);
+      if (iptr == nullptr)
         continue;
-      std::string aname(xml2cstr(iptr));
+      std::string aname(xml2cstr(iptr.get()));
       xmlAttrPtr aptr = xmlHasProp(cur, "coeff"_xml);
-      opt_variables_type::iterator oit(OptVariablesForPsi.find(aname));
-      if (aptr != NULL && oit != OptVariablesForPsi.end())
+      auto oit        = OptVariablesForPsi.find(aname);
+      if (aptr != nullptr && oit != OptVariablesForPsi.end())
       {
         attribNodes[aname] = std::pair<xmlNodePtr, std::string>(cur, "coeff");
       }
@@ -592,10 +593,10 @@ void QMCCostFunctionBase::updateXmlNodes()
     for (int iparam = 0; iparam < result->nodesetval->nodeNr; iparam++)
     {
       xmlNodePtr cur      = result->nodesetval->nodeTab[iparam];
-      const xmlChar* iptr = xmlGetProp(cur, "id"_xml);
-      if (iptr == NULL)
+      auto iptr           = xmlCharUptr(xmlGetProp(cur, "id"_xml), xmlFree);
+      if (iptr == nullptr)
         continue;
-      std::string aname(xml2cstr(iptr));
+      std::string aname(xml2cstr(iptr.get()));
       xmlAttrPtr aptr = xmlHasProp(cur, "coeff"_xml);
       opt_variables_type::iterator oit(OptVariablesForPsi.find(aname));
       if (aptr != NULL && oit != OptVariablesForPsi.end())

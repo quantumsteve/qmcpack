@@ -336,7 +336,6 @@ void BackflowBuilder::addTwoBody(xmlNodePtr cur)
         if (bsp->cutoff_radius > cutOff)
           cutOff = bsp->cutoff_radius;
         bsp->myVars.setParameterType(optimize::BACKFLOW_P);
-        //tbf->addFunc(ia, ib, std::move(bsp));
         offsets.push_back(tbf->numParams);
         tbf->numParams += bsp->NumParams;
         tbf->addFunc(ia, ib, std::move(bsp));

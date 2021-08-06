@@ -39,7 +39,7 @@ RealEGOSet::RealEGOSet(const std::vector<PosType>& k, const std::vector<RealType
 }
 
 ElectronGasOrbitalBuilder::ElectronGasOrbitalBuilder(Communicate* comm, ParticleSet& els)
-    : WaveFunctionComponentBuilder(comm, els), UseBackflow(false), BFTrans(nullptr)
+    : WaveFunctionComponentBuilder(comm, els), UseBackflow(false)
 {}
 
 std::unique_ptr<WaveFunctionComponent> ElectronGasOrbitalBuilder::buildComponent(xmlNodePtr cur)

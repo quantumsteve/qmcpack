@@ -325,7 +325,7 @@ public:
   std::unique_ptr<WaveFunctionComponent> buildComponent(xmlNodePtr cur) override;
 
   bool UseBackflow;
-  BackflowTransformation* BFTrans;
+  std::shared_ptr<BackflowTransformation> BFTrans;
 };
 
 /** OrbitalBuilder for Slater determinants of electron-gas

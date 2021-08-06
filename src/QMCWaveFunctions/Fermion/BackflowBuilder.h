@@ -46,14 +46,14 @@ class BackflowBuilder
 public:
   BackflowBuilder(ParticleSet& p, PtclPoolType& pool);
 
-  BackflowTransformation* buildBackflowTransformation(xmlNodePtr cur);
+  std::shared_ptr<BackflowTransformation> buildBackflowTransformation(xmlNodePtr cur);
 
   RealType cutOff;
 
 private:
   ParticleSet& targetPtcl;
   PtclPoolType& ptclPool;
-  BackflowTransformation* BFTrans;
+  std::shared_ptr<BackflowTransformation> BFTrans;
   bool IgnoreSpin;
   RealType Rs;
   RealType Kc;

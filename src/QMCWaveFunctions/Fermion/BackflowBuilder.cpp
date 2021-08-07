@@ -38,7 +38,7 @@
 namespace qmcplusplus
 {
 BackflowBuilder::BackflowBuilder(ParticleSet& els, PtclPoolType& pool)
-    : cutOff(1.0), targetPtcl(els), ptclPool(pool), BFTrans(0)
+    : cutOff(1.0), targetPtcl(els), ptclPool(pool)
 {
 }
 
@@ -46,7 +46,7 @@ std::shared_ptr<BackflowTransformation> BackflowBuilder::buildBackflowTransforma
 {
   xmlNodePtr curRoot = cur;
   std::string cname;
-  BFTrans = std::make_shared<BackflowTransformation>(targetPtcl);
+  auto BFTrans = std::make_shared<BackflowTransformation>(targetPtcl);
   cur     = curRoot->children;
   while (cur != NULL)
   {
@@ -65,7 +65,7 @@ std::shared_ptr<BackflowTransformation> BackflowBuilder::buildBackflowTransforma
       BFTrans->names.push_back(name);
       if (type == "e-e")
       {
-        addTwoBody(cur);
+        BFTrans->bfFuns.push_back(addTwoBody(cur));
       }
       else if (type == "e-e-I")
       {
@@ -73,12 +73,12 @@ std::shared_ptr<BackflowTransformation> BackflowBuilder::buildBackflowTransforma
       }
       else if (type == "e-I")
       {
-        addOneBody(cur);
+        BFTrans->bfFuns.push_back(addOneBody(cur));
       }
       else if (type == "rpa")
       {
         app_log() << "Adding RPA backflow functions. \n";
-        addRPA(cur);
+        BFTrans->bfFuns.push_back(addRPA(cur));
       }
       else
       {
@@ -91,7 +91,7 @@ std::shared_ptr<BackflowTransformation> BackflowBuilder::buildBackflowTransforma
   return BFTrans;
 }
 
-void BackflowBuilder::addOneBody(xmlNodePtr cur)
+std::unique_ptr<BackflowFunctionBase> BackflowBuilder::addOneBody(xmlNodePtr cur)
 {
   OhmmsAttributeSet spoAttrib;
   std::string source("none");
@@ -282,11 +282,10 @@ void BackflowBuilder::addOneBody(xmlNodePtr cur)
       APP_ABORT("Unknown function type in e-I BF Transformation.\n");
     }
   } //spin="no"
-  BFTrans->bfFuns.push_back(std::move(tbf));
-  //      tbf->reportStatus(cerr);
+  return tbf;
 }
 
-void BackflowBuilder::addTwoBody(xmlNodePtr cur)
+std::unique_ptr<BackflowFunctionBase> BackflowBuilder::addTwoBody(xmlNodePtr cur)
 {
   app_log() << "Adding electron-electron backflow. \n";
   OhmmsAttributeSet trAttrib;
@@ -373,15 +372,15 @@ void BackflowBuilder::addTwoBody(xmlNodePtr cur)
         APP_ABORT("Error creating Backflow_ee object. \n");
       }
     }
-    BFTrans->bfFuns.push_back(std::move(tbf));
   }
   else
   {
     APP_ABORT("Unknown function type in e-e BF Transformation.\n");
   }
+  return tbf;
 }
 
-void BackflowBuilder::addRPA(xmlNodePtr cur)
+std::unique_ptr<BackflowFunctionBase> BackflowBuilder::addRPA(xmlNodePtr cur)
 {
   ReportEngine PRE("BackflowBuilder", "addRPA");
   /*
@@ -480,7 +479,7 @@ void BackflowBuilder::addRPA(xmlNodePtr cur)
     }
     cur = cur->next;
   }
-  if (tbf != 0)
+  if (tbf != nullptr)
   {
     tbf->derivs.resize(tbf->numParams);
     // setup offsets
@@ -503,8 +502,8 @@ void BackflowBuilder::addRPA(xmlNodePtr cur)
         APP_ABORT("Error creating Backflow_ee object in addRPA. \n");
       }
     }
-    BFTrans->bfFuns.push_back(std::move(tbf));
   }
+  return tbf;
 }
 
 void BackflowBuilder::makeLongRange_oneBody() {}

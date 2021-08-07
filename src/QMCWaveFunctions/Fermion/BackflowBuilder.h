@@ -53,7 +53,6 @@ public:
 private:
   ParticleSet& targetPtcl;
   PtclPoolType& ptclPool;
-  std::shared_ptr<BackflowTransformation> BFTrans;
   bool IgnoreSpin;
   RealType Rs;
   RealType Kc;
@@ -63,11 +62,11 @@ private:
 
   HandlerType* myHandler;
 
-  void addOneBody(xmlNodePtr cur);
+  std::unique_ptr<BackflowFunctionBase> addOneBody(xmlNodePtr cur);
 
-  void addTwoBody(xmlNodePtr cur);
+  std::unique_ptr<BackflowFunctionBase> addTwoBody(xmlNodePtr cur);
 
-  void addRPA(xmlNodePtr cur);
+  std::unique_ptr<BackflowFunctionBase> addRPA(xmlNodePtr cur);
 
   void makeShortRange_oneBody();
 

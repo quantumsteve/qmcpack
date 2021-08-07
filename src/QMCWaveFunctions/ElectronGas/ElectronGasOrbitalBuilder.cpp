@@ -114,7 +114,7 @@ std::unique_ptr<WaveFunctionComponent> ElectronGasOrbitalBuilder::buildComponent
   }
 
   //create a Slater determinant
-  auto sdet = UseBackflow ? std::make_unique<SlaterDetWithBackflow>(targetPtcl, BFTrans)
+  auto sdet = UseBackflow ? std::make_unique<SlaterDetWithBackflow>(targetPtcl, nullptr)
                           : std::make_unique<SlaterDeterminant_t>(targetPtcl);
 
   if (UseBackflow)
@@ -122,17 +122,17 @@ std::unique_ptr<WaveFunctionComponent> ElectronGasOrbitalBuilder::buildComponent
     DiracDeterminantWithBackflow *updet, *downdet;
     app_log() << "Creating Backflow transformation in ElectronGasOrbitalBuilder::put(xmlNodePtr cur).\n";
     //create up determinant
-    updet = new DiracDeterminantWithBackflow(targetPtcl, std::move(psiu), BFTrans, 0);
+    updet = new DiracDeterminantWithBackflow(targetPtcl, std::move(psiu), nullptr, 0);
     updet->set(0, nup);
     if (ndn > 0)
     {
       //create down determinant
-      downdet = new DiracDeterminantWithBackflow(targetPtcl, std::move(psid), BFTrans, nup);
+      downdet = new DiracDeterminantWithBackflow(targetPtcl, std::move(psid), nullptr, nup);
       downdet->set(nup, ndn);
     }
     PtclPoolType dummy;
     BackflowBuilder bfbuilder(targetPtcl, dummy);
-    BFTrans = bfbuilder.buildBackflowTransformation(BFNode);
+    auto BFTrans = bfbuilder.buildBackflowTransformation(BFNode);
     sdet->add(updet, 0);
     if (ndn > 0)
       sdet->add(downdet, 1);

@@ -136,9 +136,9 @@ std::unique_ptr<WaveFunctionComponent> ElectronGasOrbitalBuilder::buildComponent
     sdet->add(updet, 0);
     if (ndn > 0)
       sdet->add(downdet, 1);
-    sdet->setBF(BFTrans);
     if (BFTrans->isOptimizable())
       sdet->Optimizable = true;
+    sdet->setBF(std::move(BFTrans));
   }
   else
   {

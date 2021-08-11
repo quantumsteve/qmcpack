@@ -42,11 +42,11 @@ BackflowBuilder::BackflowBuilder(ParticleSet& els, PtclPoolType& pool)
 {
 }
 
-std::shared_ptr<BackflowTransformation> BackflowBuilder::buildBackflowTransformation(xmlNodePtr cur)
+std::unique_ptr<BackflowTransformation> BackflowBuilder::buildBackflowTransformation(xmlNodePtr cur)
 {
   xmlNodePtr curRoot = cur;
   std::string cname;
-  auto BFTrans = std::make_shared<BackflowTransformation>(targetPtcl);
+  auto BFTrans = std::make_unique<BackflowTransformation>(targetPtcl);
   cur     = curRoot->children;
   while (cur != NULL)
   {

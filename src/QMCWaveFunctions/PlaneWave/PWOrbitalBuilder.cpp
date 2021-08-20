@@ -134,7 +134,7 @@ std::unique_ptr<WaveFunctionComponent> PWOrbitalBuilder::putSlaterDet(xmlNodePtr
       if (adet)
       {
         adet->set(firstIndex, targetPtcl.last(spin_group) - firstIndex);
-        sdet->add(adet, spin_group);
+        sdet->add(std::unique_ptr<Det_t>(adet), spin_group);
       }
       spin_group++;
     }

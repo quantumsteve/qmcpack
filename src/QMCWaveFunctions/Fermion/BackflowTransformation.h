@@ -168,10 +168,9 @@ public:
     numParams    = tr.numParams;
     numVarBefore = tr.numVarBefore;
     optIndexMap  = tr.optIndexMap;
-    bfFuns.resize(tr.bfFuns.size());
-    auto it(tr.bfFuns.begin());
-    for (int i = 0; i < (tr.bfFuns).size(); i++, it++)
-      bfFuns[i] = (*it)->makeClone(targetPtcl);
+    bfFuns.reserve(tr.bfFuns.size());
+    std::transform(tr.bfFuns.cbegin(), tr.bfFuns.cend(), std::back_inserter(bfFuns),
+                   [&targetPtcl](const auto& fun) { return fun->makeClone(targetPtcl); });
   }
 
   // FIX FIX FIX
@@ -179,15 +178,10 @@ public:
   {
     auto clone = std::make_unique<BackflowTransformation>(tqp);
     clone->copyFrom(*this, tqp);
-    //       std::vector<BackflowFunctionBase*>::iterator it((bfFuns).begin());
-    //       for(int i=0; i<(bfFuns).size() ; i++,it++)
-    //       {
-    //         clone->bfFuns[i]->reportStatus(cerr);
-    //       }
     return clone;
   }
 
-  ~BackflowTransformation(){};
+  ~BackflowTransformation() = default;
 
   bool put(xmlNodePtr cur) { return true; }
 

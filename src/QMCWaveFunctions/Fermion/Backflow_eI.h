@@ -31,7 +31,7 @@ private:
 
 public:
   std::vector<FT*> RadFun;
-  std::vector<FT*> uniqueRadFun;
+  std::vector<std::unique_ptr<FT>> uniqueRadFun;
   std::vector<int> offsetPrms;
 
   Backflow_eI(ParticleSet& ions, ParticleSet& els) : BackflowFunctionBase(ions, els), myTableIndex_(els.addTable(ions))
@@ -40,13 +40,13 @@ public:
   }
 
   //  build RadFun manually from builder class
-  Backflow_eI(ParticleSet& ions, ParticleSet& els, FT* RF)
+  Backflow_eI(ParticleSet& ions, ParticleSet& els, std::unique_ptr<FT> RF)
       : BackflowFunctionBase(ions, els), myTableIndex_(els.addTable(ions))
   {
     // same radial function for all centers by default
-    uniqueRadFun.push_back(RF);
     for (int i = 0; i < NumCenters; i++)
-      RadFun.push_back(RF);
+      RadFun.push_back(RF.get());
+    uniqueRadFun.push_back(std::move(RF));
   }
 
   std::unique_ptr<BackflowFunctionBase> makeClone(ParticleSet& tqp) const override
@@ -58,23 +58,17 @@ public:
     clone->numParams         = numParams;
     clone->derivs            = derivs;
     clone->uniqueRadFun.resize(uniqueRadFun.size());
-    clone->RadFun.resize(RadFun.size());
     for (int i = 0; i < uniqueRadFun.size(); i++)
-      clone->uniqueRadFun[i] = new FT(*(uniqueRadFun[i]));
+      clone->uniqueRadFun[i] = std::make_unique<FT>(*(uniqueRadFun[i]));
+    clone->RadFun.resize(RadFun.size());
     for (int i = 0; i < RadFun.size(); i++)
     {
-      bool done = false;
-      for (int k = 0; k < uniqueRadFun.size(); k++)
-        if (RadFun[i] == uniqueRadFun[k])
-        {
-          done             = true;
-          clone->RadFun[i] = clone->uniqueRadFun[k];
-          break;
-        }
-      if (!done)
-      {
+      auto it = std::find_if(uniqueRadFun.cbegin(), uniqueRadFun.cend(),
+                             [fun = RadFun[i]](const auto& ufun) { return ufun.get() == fun; });
+      if (it != uniqueRadFun.cend())
+        clone->RadFun[i] = clone->uniqueRadFun[std::distance(uniqueRadFun.begin(), it)].get();
+      else
         APP_ABORT("Error cloning Backflow_eI object. \n");
-      }
     }
     return clone;
   }

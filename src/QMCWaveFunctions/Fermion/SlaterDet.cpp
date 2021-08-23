@@ -260,7 +260,7 @@ std::unique_ptr<WaveFunctionComponent> SlaterDet::makeClone(ParticleSet& tqp) co
   myclone->Optimizable = Optimizable;
   for (int i = 0; i < Dets.size(); ++i)
   {
-    auto newD = Dets[i]->makeCopy(std::unique_ptr<SPOSet>(Dets[i]->getPhi()->makeClone()));
+    auto newD = Dets[i]->makeCopy(Dets[i]->getPhi()->makeClone());
     myclone->add(std::unique_ptr<DiracDeterminantBase>(newD), i);
   }
   return myclone;

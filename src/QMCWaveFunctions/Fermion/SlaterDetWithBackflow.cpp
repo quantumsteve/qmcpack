@@ -79,7 +79,7 @@ std::unique_ptr<WaveFunctionComponent> SlaterDetWithBackflow::makeClone(Particle
   myclone->Optimizable                       = Optimizable;
   for (int i = 0; i < Dets.size(); ++i)
   {
-    DiracDeterminantBase* dclne = Dets[i]->makeCopy(std::unique_ptr<SPOSet>(Dets[i]->getPhi()->makeClone()));
+    DiracDeterminantBase* dclne = Dets[i]->makeCopy(Dets[i]->getPhi()->makeClone());
     myclone->add(std::unique_ptr<DiracDeterminantBase>(dclne), i);
   }
   myclone->setBF(std::move(bf));

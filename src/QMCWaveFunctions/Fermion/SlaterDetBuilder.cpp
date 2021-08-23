@@ -477,7 +477,7 @@ bool SlaterDetBuilder::putDeterminant(xmlNodePtr cur, int spin_group)
   if (UseBackflow)
   {
     app_summary() << "      Using backflow transformation." << std::endl;
-    adet = new DiracDeterminantWithBackflow(targetPtcl, std::move(psi_clone), BFTrans, firstIndex);
+    adet = new DiracDeterminantWithBackflow(targetPtcl, std::move(psi_clone), *BFTrans, firstIndex);
   }
   else
   {
@@ -735,7 +735,8 @@ bool SlaterDetBuilder::createMSD(MultiSlaterDeterminant& multiSD, xmlNodePtr cur
       DiracDeterminantBase* adet;
       if (UseBackflow)
       {
-        adet = new DiracDeterminantWithBackflow(targetPtcl, std::static_pointer_cast<SPOSet>(spo), 0, 0);
+        auto& meow = (MultiSlaterDeterminantWithBackflow&)multiSD;
+        adet = new DiracDeterminantWithBackflow(targetPtcl, std::static_pointer_cast<SPOSet>(spo), *meow.BFTrans, 0);
       }
       else
       {
@@ -764,7 +765,7 @@ bool SlaterDetBuilder::createMSD(MultiSlaterDeterminant& multiSD, xmlNodePtr cur
       DiracDeterminantBase* adet;
       if (UseBackflow)
       {
-        adet = new DiracDeterminantWithBackflow(targetPtcl, std::static_pointer_cast<SPOSet>(spo), 0, 0);
+        adet = new DiracDeterminantWithBackflow(targetPtcl, std::static_pointer_cast<SPOSet>(spo), *BFTrans, 0);
       }
       else
       {

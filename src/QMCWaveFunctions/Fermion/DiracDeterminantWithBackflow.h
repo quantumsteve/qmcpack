@@ -23,7 +23,7 @@
 #include "QMCWaveFunctions/Fermion/BackflowTransformation.h"
 #include "QMCWaveFunctions/Fermion/DiracDeterminant.h"
 #include "OhmmsPETE/OhmmsArray.h"
-
+#include "Message/AppAbort.h"
 namespace qmcplusplus
 {
 /** class to handle determinants with backflow
@@ -52,7 +52,7 @@ public:
    */
   DiracDeterminantWithBackflow(ParticleSet& ptcl,
                                std::shared_ptr<SPOSet>&& spos,
-                               std::shared_ptr<BackflowTransformation> BF,
+                               BackflowTransformation& BF,
                                int first = 0);
 
   ///default destructor
@@ -74,7 +74,7 @@ public:
   }
 
   ///set BF pointers
-  void setBF(std::shared_ptr<BackflowTransformation> bf) override { BFTrans = std::move(bf); }
+  void setBF(std::shared_ptr<BackflowTransformation> bf) override { APP_ABORT("Don't call me!"); }
 
   // in general, assume that P is the quasiparticle set
   void evaluateDerivatives(ParticleSet& P,
@@ -142,6 +142,7 @@ public:
    * can overwrite to clone itself correctly.
    */
   DiracDeterminantWithBackflow* makeCopy(std::shared_ptr<SPOSet>&& spo) const override;
+  DiracDeterminantWithBackflow* makeCopy(std::shared_ptr<SPOSet>&& spo, BackflowTransformation& bf) const override;
 
   inline ValueType rcdot(TinyVector<RealType, OHMMS_DIM>& lhs, TinyVector<ValueType, OHMMS_DIM>& rhs)
   {
@@ -167,7 +168,7 @@ public:
   HessVector_t grad_gradV;
   HessMatrix_t grad_grad_psiM_temp;
   GGGMatrix_t grad_grad_grad_psiM;
-  std::shared_ptr<BackflowTransformation> BFTrans;
+  BackflowTransformation& BFTrans;
   ParticleSet::ParticleGradient_t Gtemp;
   ValueType La1, La2, La3;
   HessMatrix_t Ajk_sum, Qmat;

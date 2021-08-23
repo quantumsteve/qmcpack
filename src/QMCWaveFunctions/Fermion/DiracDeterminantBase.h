@@ -157,7 +157,10 @@ public:
    * can overwrite to clone itself correctly.
    */
   virtual DiracDeterminantBase* makeCopy(std::shared_ptr<SPOSet>&& spo) const = 0;
-
+  virtual DiracDeterminantBase* makeCopy(std::shared_ptr<SPOSet>&& spo, BackflowTransformation& bf) const
+  {
+    return this->makeCopy(std::move(spo));
+  }
 #ifdef QMC_CUDA
   // expose GPU interfaces
   //using WaveFunctionComponent::recompute;

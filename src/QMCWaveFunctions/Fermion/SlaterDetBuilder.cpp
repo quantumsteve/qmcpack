@@ -151,7 +151,7 @@ std::unique_ptr<WaveFunctionComponent> SlaterDetBuilder::buildComponent(xmlNodeP
       if (UseBackflow)
       {
         app_summary() << "    Using backflow transformation." << std::endl;
-        slaterdet_0 = std::make_unique<SlaterDetWithBackflow>(targetPtcl, BFTrans);
+        slaterdet_0 = std::make_unique<SlaterDetWithBackflow>(targetPtcl, std::move(BFTrans));
       }
       else
         slaterdet_0 = std::make_unique<SlaterDeterminant_t>(targetPtcl);
@@ -285,7 +285,7 @@ std::unique_ptr<WaveFunctionComponent> SlaterDetBuilder::buildComponent(xmlNodeP
         {
           app_summary() << "    Using backflow transformation." << std::endl;
           multislaterdet_0 = std::make_unique<MultiSlaterDeterminantWithBackflow>(targetPtcl, std::move(spo_up),
-                                                                                  std::move(spo_dn), BFTrans);
+                                                                                  std::move(spo_dn), std::move(BFTrans));
           createMSD(*multislaterdet_0, cur);
         }
         else
@@ -319,13 +319,13 @@ std::unique_ptr<WaveFunctionComponent> SlaterDetBuilder::buildComponent(xmlNodeP
     if (multiDet)
     {
       if (msd_algorithm == "all_determinants")
-        multislaterdet_0->setBF(BFTrans);
+        multislaterdet_0->setBF(std::move(BFTrans));
       else
         myComm->barrier_and_abort("Backflow is not supported by Multi-Slater determinants using the table method!");
     }
     else
     {
-      slaterdet_0->setBF(BFTrans);
+      slaterdet_0->setBF(std::move(BFTrans));
       if (BFTrans->isOptimizable())
         slaterdet_0->Optimizable = true;
     }

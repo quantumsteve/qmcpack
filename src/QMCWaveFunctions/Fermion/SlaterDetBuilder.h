@@ -67,7 +67,7 @@ private:
   std::unique_ptr<MultiSlaterDeterminantFast> multislaterdetfast_0;
 
   bool UseBackflow;
-  std::shared_ptr<BackflowTransformation> BFTrans;
+  std::unique_ptr<BackflowTransformation> BFTrans;
 
   /** process a determinant element
    * @param cur xml node

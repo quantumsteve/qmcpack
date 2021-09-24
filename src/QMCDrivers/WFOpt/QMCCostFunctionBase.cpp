@@ -88,19 +88,18 @@ QMCCostFunctionBase::~QMCCostFunctionBase()
     delete debug_stream;
 }
 
-void QMCCostFunctionBase::setRng(std::vector<RandomGenerator_t*>& r)
+void QMCCostFunctionBase::setRng(UPtrVector<RandomGenerator_t>& r)
 {
   if (MoverRng.size() < r.size())
   {
-    delete_iter(MoverRng.begin(), MoverRng.end());
-    delete_iter(RngSaved.begin(), RngSaved.end());
     MoverRng.resize(r.size());
     RngSaved.resize(r.size());
   }
   for (int ip = 0; ip < r.size(); ++ip)
-    MoverRng[ip] = r[ip];
+    MoverRng[ip] = std::move(r[ip]);
   for (int ip = 0; ip < r.size(); ++ip)
-    RngSaved[ip] = new RandomGenerator_t(*MoverRng[ip]);
+    if (MoverRng[ip])
+      RngSaved[ip] = std::make_unique<RandomGenerator_t>(*(MoverRng[ip]));
 }
 
 void QMCCostFunctionBase::setTargetEnergy(Return_rt et)
@@ -181,12 +180,12 @@ QMCCostFunctionBase::Return_rt QMCCostFunctionBase::computedCost()
   //    if (NumWalkersEff < MinNumWalkers)
   {
     WARNMSG("CostFunction-> Number of Effective Walkers is too small! "
-             << std::endl
-             << "  Number of effective walkers (samples) / total number of samples = "
-             << (1.0 * NumWalkersEff) / NumSamples << std::endl
-             << "  User specified threshold minwalkers = " << MinNumWalkers << std::endl
-             << "  If this message appears frequently. You might have to be cautious. " << std::endl
-             << "  Find info about parameter \"minwalkers\" in the user manual!");
+            << std::endl
+            << "  Number of effective walkers (samples) / total number of samples = "
+            << (1.0 * NumWalkersEff) / NumSamples << std::endl
+            << "  User specified threshold minwalkers = " << MinNumWalkers << std::endl
+            << "  If this message appears frequently. You might have to be cautious. " << std::endl
+            << "  Find info about parameter \"minwalkers\" in the user manual!");
     IsValid = false;
   }
   return CostValue;

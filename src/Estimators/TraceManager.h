@@ -1446,9 +1446,9 @@ public:
   bool hdf_format;
   std::string file_root;
   Communicate* communicator;
-  hdf_archive* hdf_file;
+  std::unique_ptr<hdf_archive> hdf_file;
 
-  TraceManager(Communicate* comm = 0) : verbose(false), hdf_file(0)
+  TraceManager(Communicate* comm = 0) : verbose(false)
   {
     reset_permissions();
     master_copy    = true;
@@ -1465,13 +1465,13 @@ public:
   }
 
 
-  inline TraceManager* makeClone()
+  inline std::unique_ptr<TraceManager> makeClone()
   {
     if (verbose)
       app_log() << "TraceManager::makeClone " << master_copy << std::endl;
     if (!master_copy)
       APP_ABORT("TraceManager::makeClone  only the master copy should call this function");
-    TraceManager* tm = new TraceManager();
+    auto tm          = std::make_unique<TraceManager>();
     tm->master_copy  = false;
     tm->transfer_state_from(*this);
     tm->distribute();
@@ -1865,7 +1865,7 @@ public:
   }
 
 
-  inline void check_clones(std::vector<TraceManager*>& clones)
+  inline void check_clones(UPtrVector<TraceManager>& clones)
   {
     if (writing_traces && clones.size() > 0)
     {
@@ -1921,7 +1921,7 @@ public:
 
 
   //write buffered trace data to file
-  inline void write_buffers(std::vector<TraceManager*>& clones, int block)
+  inline void write_buffers(UPtrVector<TraceManager>& clones, int block)
   {
     if (master_copy)
     {
@@ -1941,7 +1941,7 @@ public:
   }
 
 
-  inline void open_file(std::vector<TraceManager*>& clones)
+  inline void open_file(UPtrVector<TraceManager>& clones)
   {
     if (master_copy)
     {
@@ -1981,7 +1981,7 @@ public:
   }
 
 
-  inline void startRun(int blocks, std::vector<TraceManager*>& clones)
+  inline void startRun(int blocks, UPtrVector<TraceManager>& clones)
   {
     if (verbose)
       app_log() << "TraceManager::startRun " << master_copy << std::endl;
@@ -2060,7 +2060,7 @@ public:
   }
 
   //hdf file operations
-  inline void open_hdf_file(std::vector<TraceManager*>& clones)
+  inline void open_hdf_file(UPtrVector<TraceManager>& clones)
   {
     if (clones.size() == 0)
       APP_ABORT("TraceManager::open_hdf_file  no trace clones exist, cannot open file");
@@ -2081,7 +2081,7 @@ public:
     file_name += ".traces.h5";
     if (verbose)
       app_log() << "TraceManager::open_hdf_file  opening traces hdf file " << file_name << std::endl;
-    hdf_file        = new hdf_archive(communicator, false);
+    hdf_file        = std::make_unique<hdf_archive>(communicator, false);
     bool successful = hdf_file->create(file_name);
     if (!successful)
       APP_ABORT("TraceManager::open_hdf_file  failed to open hdf file " + file_name);
@@ -2093,7 +2093,7 @@ public:
   }
 
 
-  inline void write_buffers_hdf(std::vector<TraceManager*>& clones)
+  inline void write_buffers_hdf(UPtrVector<TraceManager>& clones)
   {
     if (verbose)
       app_log() << "TraceManager::write_buffers_hdf " << master_copy << std::endl;
@@ -2105,7 +2105,7 @@ public:
     }
   }
 
-  inline void close_hdf_file() { delete hdf_file; }
+  inline void close_hdf_file() { hdf_file.reset(); }
 };
 
 
@@ -2269,10 +2269,10 @@ struct TraceManager
   //inline void check_clones(std::vector<TraceManager*>& clones)                                              { }
   //inline void reset_buffers()                                                                          { }
   inline void buffer_sample(int current_step) {}
-  inline void write_buffers(std::vector<TraceManager*>& clones, int block) {}
+  inline void write_buffers(UPtrVector<TraceManager*>& clones, int block) {}
   //inline void open_file(std::vector<TraceManager*>& clones)                                                 { }
   //inline void close_file()                                                                             { }
-  inline void startRun(int blocks, std::vector<TraceManager*>& clones) {}
+  inline void startRun(int blocks, UPtrVector<TraceManager>& clones) {}
   inline void stopRun() {}
   inline void startBlock(int nsteps) {}
   inline void stopBlock() {}

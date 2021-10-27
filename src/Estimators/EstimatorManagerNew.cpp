@@ -38,14 +38,10 @@ namespace qmcplusplus
 {
 //initialize the name of the primary estimator
 EstimatorManagerNew::EstimatorManagerNew(Communicate* c)
-    : MainEstimatorName("LocalEnergy"), RecordCount(0), my_comm_(c), Collectables(0), max4ascii(8), FieldWidth(20)
+    : MainEstimatorName("LocalEnergy"), RecordCount(0), my_comm_(c), max4ascii(8), FieldWidth(20)
 {}
 
-EstimatorManagerNew::~EstimatorManagerNew()
-{
-  if (Collectables)
-    delete Collectables;
-}
+EstimatorManagerNew::~EstimatorManagerNew() = default;
 
 /** reset names of the properties
  *
@@ -406,10 +402,10 @@ bool EstimatorManagerNew::put(QMCHamiltonian& H, const ParticleSet& pset, xmlNod
     add(std::make_unique<LocalEnergyEstimator>(H, true), MainEstimatorName);
   }
   //Collectables is special and should not be added to Estimators
-  if (Collectables == 0 && H.sizeOfCollectables())
+  if (!Collectables && H.sizeOfCollectables())
   {
     app_log() << "  Using CollectablesEstimator for collectables, e.g. sk, gofr, density " << std::endl;
-    Collectables = new CollectablesEstimator(H);
+    Collectables = std::make_unique<CollectablesEstimator>(H);
   }
   // Unrecognized estimators are not allowed
   if (!extra_types.empty())

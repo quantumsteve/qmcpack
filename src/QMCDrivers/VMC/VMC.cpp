@@ -162,7 +162,7 @@ void VMC::resetRun()
     movers_created = true;
     Movers.resize(NumThreads, 0);
     estimatorClones.resize(NumThreads, 0);
-    traceClones.resize(NumThreads, 0);
+    traceClones.resize(NumThreads);
     Rng.resize(NumThreads);
 #pragma omp parallel for
     for (int ip = 0; ip < NumThreads; ++ip)
@@ -260,7 +260,7 @@ void VMC::resetRun()
   {
     //int ip=omp_get_thread_num();
     Movers[ip]->put(qmcNode);
-    Movers[ip]->resetRun(branchEngine.get(), estimatorClones[ip], traceClones[ip], DriftModifier);
+    Movers[ip]->resetRun(branchEngine.get(), estimatorClones[ip], traceClones[ip].get(), DriftModifier);
     if (qmc_driver_mode[QMC_UPDATE_MODE])
       Movers[ip]->initWalkersForPbyP(W.begin() + wPerRank[ip], W.begin() + wPerRank[ip + 1]);
     else

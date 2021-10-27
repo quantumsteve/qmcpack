@@ -30,6 +30,7 @@
 #include "OhmmsPETE/OhmmsVector.h"
 #include "OhmmsData/HDFAttribIO.h"
 #include <bitset>
+#include <optional>
 
 namespace qmcplusplus
 {
@@ -217,9 +218,9 @@ protected:
   ///total weight accumulated in a block
   RealType BlockWeight;
   ///file handler to write data
-  std::ofstream* Archive;
+  std::optional<std::ofstream> Archive;
   ///file handler to write data for debugging
-  std::ofstream* DebugArchive;
+  std::optional<std::ofstream> DebugArchive;
   ///communicator to handle communication
   Communicate* myComm;
   /** pointer to the primary ScalarEstimatorBase

@@ -83,10 +83,6 @@ CloneManager::~CloneManager()
   // delete_iter(CSMovers.begin(),CSMovers.end());
   delete_iter(Movers.begin(), Movers.end());
   delete_iter(estimatorClones.begin(), estimatorClones.end());
-
-#if !defined(REMOVE_TRACEMANAGER)
-  delete_iter(traceClones.begin(), traceClones.end());
-#endif
 }
 
 void CloneManager::makeClones(MCWalkerConfiguration& w, TrialWaveFunction& psi, QMCHamiltonian& ham)

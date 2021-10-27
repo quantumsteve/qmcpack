@@ -197,7 +197,7 @@ private:
    *
    * Do not need to clone: owned by the master thread
    */
-  CollectablesEstimator* Collectables;
+  std::unique_ptr<CollectablesEstimator> Collectables;
   /** accumulator for the energy
    *
    * @todo expand it for all the scalar observables to report the final results

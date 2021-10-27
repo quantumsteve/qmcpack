@@ -227,7 +227,7 @@ void CSVMC::resetRun()
   {
     CSMovers.resize(NumThreads, 0);
     estimatorClones.resize(NumThreads, 0);
-    traceClones.resize(NumThreads, 0);
+    traceClones.resize(NumThreads);
     Rng.resize(NumThreads);
 
 #pragma omp parallel for
@@ -271,7 +271,7 @@ void CSVMC::resetRun()
         app_log() << os.str() << std::endl;
 
       CSMovers[ip]->put(qmcNode);
-      CSMovers[ip]->resetRun(branchEngine.get(), estimatorClones[ip], traceClones[ip], DriftModifier);
+      CSMovers[ip]->resetRun(branchEngine.get(), estimatorClones[ip], traceClones[ip].get(), DriftModifier);
     }
   }
 #if !defined(REMOVE_TRACEMANAGER)
@@ -296,7 +296,7 @@ void CSVMC::resetRun()
   {
     //int ip=omp_get_thread_num();
     CSMovers[ip]->put(qmcNode);
-    CSMovers[ip]->resetRun(branchEngine.get(), estimatorClones[ip], traceClones[ip], DriftModifier);
+    CSMovers[ip]->resetRun(branchEngine.get(), estimatorClones[ip], traceClones[ip].get(), DriftModifier);
     if (qmc_driver_mode[QMC_UPDATE_MODE])
       CSMovers[ip]->initCSWalkersForPbyP(W.begin() + wPerRank[ip], W.begin() + wPerRank[ip + 1], nWarmupSteps > 0);
     else

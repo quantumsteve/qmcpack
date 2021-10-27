@@ -56,8 +56,6 @@ EstimatorManagerBase::EstimatorManagerBase(Communicate* c)
     : MainEstimatorName("LocalEnergy"),
       RecordCount(0),
       h_file(-1),
-      Archive(0),
-      DebugArchive(0),
       myComm(0),
       MainEstimator(0),
       max4ascii(8),
@@ -71,8 +69,6 @@ EstimatorManagerBase::EstimatorManagerBase(EstimatorManagerBase& em)
       Options(em.Options),
       RecordCount(0),
       h_file(-1),
-      Archive(0),
-      DebugArchive(0),
       myComm(0),
       MainEstimator(0),
       EstimatorMap(em.EstimatorMap),
@@ -185,11 +181,11 @@ void EstimatorManagerBase::start(int blocks, bool record)
     for (int i = 0; i < RemoteData.size(); ++i)
       RemoteData[i]->resize(BufferSize);
 #if defined(DEBUG_ESTIMATOR_ARCHIVE)
-  if (record && DebugArchive == 0)
+  if (record && !DebugArchive)
   {
     char fname[128];
     sprintf(fname, "%s.p%03d.scalar.dat", myComm->getName().c_str(), myComm->rank());
-    DebugArchive = new std::ofstream(fname);
+    DebugArchive = std::ofstream(fname);
     addHeader(*DebugArchive);
   }
 #endif
@@ -197,11 +193,9 @@ void EstimatorManagerBase::start(int blocks, bool record)
   Options.set(RECORD, record && Options[MANAGE]);
   if (Options[RECORD])
   {
-    if (Archive)
-      delete Archive;
     std::string fname(myComm->getName());
     fname.append(".scalar.dat");
-    Archive = new std::ofstream(fname.c_str());
+    Archive = std::ofstream(fname.c_str());
     addHeader(*Archive);
     if (h5desc.size())
     {
@@ -251,8 +245,7 @@ void EstimatorManagerBase::stop()
   //close any open files
   if (Archive)
   {
-    delete Archive;
-    Archive = 0;
+    Archive.reset();
   }
   if (h_file != -1)
   {

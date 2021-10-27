@@ -202,7 +202,7 @@ void RMC::resetRun()
   {
     Movers.resize(NumThreads, 0);
     estimatorClones.resize(NumThreads, 0);
-    traceClones.resize(NumThreads, 0);
+    traceClones.resize(NumThreads);
     Rng.resize(NumThreads);
     branchEngine->initReptile(W);
 #pragma omp parallel for
@@ -248,7 +248,7 @@ void RMC::resetRun()
   for (int ip = 0; ip < NumThreads; ++ip)
   {
     Movers[ip]->put(qmcNode);
-    Movers[ip]->resetRun(branchEngine.get(), estimatorClones[ip], traceClones[ip], DriftModifier);
+    Movers[ip]->resetRun(branchEngine.get(), estimatorClones[ip], traceClones[ip].get(), DriftModifier);
 
     wClones[ip]->reptile    = W.ReptileList[ip].get();
     wClones[ip]->activeBead = 0;

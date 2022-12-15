@@ -105,6 +105,7 @@ bool HDFWalkerOutput::dump(const WalkerConfigurations& W, int nblock)
   dump_file.write(cur_version.version, hdf::version);
   dump_file.push(hdf::main_state);
   dump_file.write(nblock, "block");
+  app_warning() << "IS_PARALLEL? " << myComm->rank() << " " << dump_file.is_parallel() << '\n';
 
   write_configuration(W, dump_file, nblock);
   dump_file.close();
@@ -128,7 +129,6 @@ void HDFWalkerOutput::write_configuration(const WalkerConfigurations& W, hdf_arc
   hout.write(number_of_walkers_, hdf::num_walkers);
 
   std::array<size_t, 3> gcounts{number_of_walkers_, number_of_particles_, OHMMS_DIM};
-
   if (hout.is_parallel())
   {
     { // write walker offset.
@@ -156,6 +156,13 @@ void HDFWalkerOutput::write_configuration(const WalkerConfigurations& W, hdf_arc
       std::array<size_t, 3> offsets{static_cast<size_t>(W.WalkerOffsets[myComm->rank()]), 0, 0};
       hyperslab_proxy<BufferType, 3> slab(RemoteData[0], gcounts, counts, offsets);
       hout.write(slab, hdf::walkers);
+
+      std::vector<QMCTraits::FullPrecRealType> walker_weights;
+      for (const auto& walker : W) {
+        walker_weights.push_back(walker->Weight);
+        //app_warning() << "Walker Weight: " << walker->Weight << '\n';
+      }
+      hout.write(walker_weights, hdf::walker_weights);
     }
   }
   else
@@ -175,6 +182,12 @@ void HDFWalkerOutput::write_configuration(const WalkerConfigurations& W, hdf_arc
     }
     int buffer_id = (myComm->size() > 1) ? 1 : 0;
     hout.writeSlabReshaped(RemoteData[buffer_id], gcounts, hdf::walkers);
+    // TODO save hdf::walker_weights
+    std::vector<QMCTraits::FullPrecRealType> walker_weights;
+    for (const auto& walker : W) {
+        walker_weights.push_back(walker->Weight);
+        app_warning() << "Walker Weight: " <<  myComm->rank() << " " << walker->Weight << '\n';
+    }
   }
 }
 

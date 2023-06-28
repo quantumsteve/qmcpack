@@ -223,7 +223,7 @@ void RMC::resetRun()
       std::ostringstream os;
       estimatorClones[ip]->resetTargetParticleSet(*wClones[ip]);
       estimatorClones[ip]->setCollectionMode(false);
-      Rng[ip] = std::make_unique<RandomGenerator>(*RandomNumberControl::Children[ip]);
+      Rng[ip].reset(dynamic_cast<RandomGenerator*>(RandomNumberControl::Children[ip]->clone().release()));
 #if !defined(REMOVE_TRACEMANAGER)
       traceClones[ip] = Traces->makeClone();
 #endif

@@ -30,16 +30,18 @@ namespace qmcplusplus
  *
  *  
  */
+template<typename T>
 class ContextForSteps
 {
 public:
-  ContextForSteps(RandomBase<double>& random_gen);
-
-  RandomBase<double>& get_random_gen() { return random_gen_; }
-
+  ContextForSteps(RandomBase<T>& random_gen);
+  RandomBase<T>& get_random_gen();
 protected:
-  RandomBase<double>& random_gen_;
+  RandomBase<T>& random_gen_;
 };
+
+extern template class ContextForSteps<float>;
+extern template class ContextForSteps<double>;
 
 } // namespace qmcplusplus
 #endif

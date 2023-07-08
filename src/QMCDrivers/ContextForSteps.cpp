@@ -14,6 +14,13 @@
 
 namespace qmcplusplus
 {
-ContextForSteps::ContextForSteps(RandomBase<double>& random_gen) : random_gen_(random_gen) {}
+template<typename T>
+ContextForSteps<T>::ContextForSteps(RandomBase<T>& random_gen) : random_gen_(random_gen)
+{}
 
+template<typename T>
+RandomBase<T>& ContextForSteps<T>::get_random_gen() { return random_gen_; }
+
+template class ContextForSteps<float>;
+template class ContextForSteps<double>;
 } // namespace qmcplusplus

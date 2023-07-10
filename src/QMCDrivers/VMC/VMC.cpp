@@ -183,7 +183,7 @@ void VMC::resetRun()
       traceClones[ip] = Traces->makeClone();
 #endif
 #ifdef USE_FAKE_RNG
-      Rng[ip] = std::make_unique<FakeRandom<double>>();
+      Rng[ip] = std::make_unique<FakeRandom<QMCTraits::RealType>>();
 #else
       Rng[ip] = RandomNumberControl::Children[ip]->clone();
 #endif

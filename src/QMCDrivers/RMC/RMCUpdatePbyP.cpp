@@ -40,7 +40,7 @@ using WP = WalkerProperties::Indexes;
 RMCUpdatePbyPWithDrift::RMCUpdatePbyPWithDrift(MCWalkerConfiguration& w,
                                                TrialWaveFunction& psi,
                                                QMCHamiltonian& h,
-                                               RandomBase<double>& rg,
+                                               RandomBase<QMCTraits::RealType>& rg,
                                                std::vector<int> act,
                                                std::vector<int> tp)
     : QMCUpdateBase(w, psi, h, rg),

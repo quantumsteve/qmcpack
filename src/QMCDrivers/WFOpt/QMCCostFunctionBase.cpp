@@ -83,7 +83,7 @@ QMCCostFunctionBase::~QMCCostFunctionBase()
   debug_stream.reset();
 }
 
-void QMCCostFunctionBase::setRng(RefVector<RandomBase<double>> r)
+void QMCCostFunctionBase::setRng(RefVector<RandomBase<QMCTraits::RealType>> r)
 {
   if (MoverRng.size() < r.size())
   {

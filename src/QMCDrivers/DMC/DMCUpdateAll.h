@@ -23,7 +23,7 @@ public:
   DMCUpdateAllWithRejection(MCWalkerConfiguration& w,
                             TrialWaveFunction& psi,
                             QMCHamiltonian& h,
-                            RandomBase<double>& rg);
+                            RandomBase<QMCTraits::RealType>& rg);
   ///destructor
   ~DMCUpdateAllWithRejection() override;
 
@@ -39,7 +39,10 @@ class DMCUpdateAllWithKill : public QMCUpdateBase
 {
 public:
   /// Constructor.
-  DMCUpdateAllWithKill(MCWalkerConfiguration& w, TrialWaveFunction& psi, QMCHamiltonian& h, RandomBase<double>& rg);
+  DMCUpdateAllWithKill(MCWalkerConfiguration& w,
+                       TrialWaveFunction& psi,
+                       QMCHamiltonian& h,
+                       RandomBase<QMCTraits::RealType>& rg);
   ///destructor
   ~DMCUpdateAllWithKill() override;
 

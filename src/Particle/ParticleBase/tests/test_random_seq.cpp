@@ -34,7 +34,7 @@ namespace qmcplusplus
 {
 TEST_CASE("gaussian random array length 1", "[particle_base]")
 {
-  FakeRandom rg;
+  FakeRandom<QMCTraits::RealType> rg;
   std::vector<double> a(2);
   assignGaussRand(a.data(), 1, rg);
 
@@ -45,7 +45,7 @@ TEST_CASE("gaussian random array length 1", "[particle_base]")
 
 TEST_CASE("gaussian random array length 2", "[particle_base]")
 {
-  FakeRandom rg;
+  FakeRandom<QMCTraits::RealType> rg;
   std::vector<double> a(3);
   assignGaussRand(a.data(), 2, rg);
 
@@ -57,7 +57,7 @@ TEST_CASE("gaussian random array length 2", "[particle_base]")
 
 TEST_CASE("gaussian random array length 3", "[particle_base]")
 {
-  FakeRandom rg;
+  FakeRandom<QMCTraits::RealType> rg;
   std::vector<double> a(4);
   assignGaussRand(a.data(), 3, rg);
 
@@ -70,7 +70,7 @@ TEST_CASE("gaussian random array length 3", "[particle_base]")
 
 TEST_CASE("gaussian random particle attrib array length 1", "[particle_base]")
 {
-  FakeRandom rg;
+  FakeRandom<QMCTraits::RealType> rg;
   ParticleAttrib<TinyVector<double, 1>> PA;
   PA.resize(1);
   makeGaussRandomWithEngine(PA, rg);
@@ -81,7 +81,7 @@ TEST_CASE("gaussian random particle attrib array length 1", "[particle_base]")
 
 TEST_CASE("gaussian random input one", "[particle_base]")
 {
-  FakeRandom rg;
+  FakeRandom<QMCTraits::RealType> rg;
   rg.set_value(1.0);
   std::vector<double> a(2);
   assignGaussRand(a.data(), 2, rg);
@@ -95,7 +95,7 @@ TEST_CASE("gaussian random input one", "[particle_base]")
 
 TEST_CASE("gaussian random input zero", "[particle_base]")
 {
-  FakeRandom rg;
+  FakeRandom<QMCTraits::RealType> rg;
   rg.set_value(0.0);
   std::vector<double> a(2);
   assignGaussRand(a.data(), 2, rg);
@@ -110,7 +110,7 @@ TEST_CASE("makeGaussRandomWithEngine(MCCoords...)", "[particle_base]")
   int size_test = 7;
   std::vector<double> gauss_random_vals(size_test * 3 + (size_test * 3) % 2 + size_test);
   {
-    StdRandom<double> rng;
+    StdRandom<QMCTraits::RealType> rng;
     makeGaussRandomWithEngine(gauss_random_vals, rng);
   }
 
@@ -125,13 +125,13 @@ TEST_CASE("makeGaussRandomWithEngine(MCCoords...)", "[particle_base]")
 
   MCCoords<CoordsType::POS> mc_coords_rs(size_test);
   {
-    StdRandom<double> rng;
+    StdRandom<QMCTraits::RealType> rng;
     makeGaussRandomWithEngine(mc_coords_rs, rng);
     checkRs(mc_coords_rs.positions);
   }
   MCCoords<CoordsType::POS_SPIN> mc_coords_rsspins(size_test);
   {
-    StdRandom<double> rng;
+    StdRandom<QMCTraits::RealType> rng;
     makeGaussRandomWithEngine(mc_coords_rsspins, rng);
     checkRs(mc_coords_rsspins.positions);
     // Mod 2 is result of how gaussianDistribution is generated.

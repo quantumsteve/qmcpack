@@ -192,16 +192,16 @@ public:
 
   void putWalkers(std::vector<xmlNodePtr>& wset) override;
 
-  inline RefVector<RandomBase<double>> getRngRefs() const
+  inline RefVector<RandomBase<QMCTraits::RealType>> getRngRefs() const
   {
-    RefVector<RandomBase<double>> RngRefs;
+    RefVector<RandomBase<QMCTraits::RealType>> RngRefs;
     for (int i = 0; i < Rng.size(); ++i)
       RngRefs.push_back(*Rng[i]);
     return RngRefs;
   }
 
   ///return the i-th random generator
-  inline RandomBase<double>& getRng(int i) override { return (*Rng[i]); }
+  inline RandomBase<QMCTraits::RealType>& getRng(int i) override { return (*Rng[i]); }
 
   /** intended for logging output and debugging
    *  you should base behavior on type preferably at compile time or if
@@ -233,7 +233,7 @@ public:
 
   static void initialLogEvaluation(int crowd_id,
                                    UPtrVector<Crowd>& crowds,
-                                   UPtrVector<ContextForSteps<double>>& step_context);
+                                   UPtrVector<ContextForSteps<QMCTraits::RealType>>& step_context);
 
 
   /** should be set in input don't see a reason to set individually
@@ -425,10 +425,10 @@ protected:
 
   /** Per crowd move contexts, this is where the DistanceTables etc. reside
    */
-  UPtrVector<ContextForSteps<double>> step_contexts_;
+  UPtrVector<ContextForSteps<QMCTraits::RealType>> step_contexts_;
 
   ///Random number generators
-  UPtrVector<RandomBase<double>> Rng;
+  UPtrVector<RandomBase<QMCTraits::RealType>> Rng;
 
   ///a list of mcwalkerset element
   std::vector<xmlNodePtr> mcwalkerNodePtr;

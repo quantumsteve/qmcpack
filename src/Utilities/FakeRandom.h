@@ -19,7 +19,7 @@
 
 namespace qmcplusplus
 {
-template<typename T = double>
+template<typename T>
 class FakeRandom : public RandomBase<T>
 {
 public:

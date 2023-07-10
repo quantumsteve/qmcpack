@@ -30,9 +30,9 @@ typename RNG::result_type RNGThreadSafe<RNG>::operator()()
   return result;
 }
 
-template class RNGThreadSafe<FakeRandom<OHMMS_PRECISION_FULL>>;
+template class RNGThreadSafe<FakeRandom<OHMMS_PRECISION>>;
 template class RNGThreadSafe<RandomGenerator>;
 
-RNGThreadSafe<FakeRandom<OHMMS_PRECISION_FULL>> fake_random_global;
+RNGThreadSafe<FakeRandom<OHMMS_PRECISION>> fake_random_global;
 RNGThreadSafe<RandomGenerator> random_global;
 } // namespace qmcplusplus

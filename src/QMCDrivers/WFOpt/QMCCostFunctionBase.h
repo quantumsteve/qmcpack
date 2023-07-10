@@ -154,7 +154,7 @@ public:
 
 #endif
 
-  void setRng(RefVector<RandomBase<double>> r);
+  void setRng(RefVector<RandomBase<QMCTraits::RealType>> r);
 
   inline bool getneedGrads() const { return needGrads; }
 
@@ -272,8 +272,8 @@ protected:
   std::string RootName;
 
   ///Random number generators
-  UPtrVector<RandomBase<double>> RngSaved;
-  std::vector<RandomBase<double>*> MoverRng;
+  UPtrVector<RandomBase<QMCTraits::RealType>> RngSaved;
+  std::vector<RandomBase<QMCTraits::RealType>*> MoverRng;
 
   /// optimized parameter names
   std::vector<std::string> variational_subset_names;

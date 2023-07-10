@@ -71,7 +71,7 @@ TEST_CASE("VMC Particle-by-Particle advanceWalkers", "[drivers][vmc]")
   psi.registerData(elec, elec[0]->DataSet);
   elec[0]->DataSet.allocate();
 
-  FakeRandom rg;
+  FakeRandom<QMCTraits::RealType> rg;
 
   QMCHamiltonian h;
   h.addOperator(std::make_unique<BareKineticEnergy>(elec, psi), "Kinetic");

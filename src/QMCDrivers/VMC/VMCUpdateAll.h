@@ -25,7 +25,10 @@ class VMCUpdateAll : public QMCUpdateBase
 {
 public:
   /// Constructor.
-  VMCUpdateAll(MCWalkerConfiguration& w, TrialWaveFunction& psi, QMCHamiltonian& h, RandomBase<double>& rg);
+  VMCUpdateAll(MCWalkerConfiguration& w,
+               TrialWaveFunction& psi,
+               QMCHamiltonian& h,
+               RandomBase<QMCTraits::RealType>& rg);
 
   ~VMCUpdateAll() override;
 

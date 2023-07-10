@@ -73,7 +73,7 @@ TEST_CASE("DMC Particle-by-Particle advanceWalkers ConstantOrbital", "[drivers][
   psi.registerData(elec, elec[0]->DataSet);
   elec[0]->DataSet.allocate();
 
-  FakeRandom rg;
+  FakeRandom<QMCTraits::RealType> rg;
 
   QMCHamiltonian h;
   h.addOperator(std::make_unique<BareKineticEnergy>(elec, psi), "Kinetic");
@@ -158,7 +158,7 @@ TEST_CASE("DMC Particle-by-Particle advanceWalkers LinearOrbital", "[drivers][dm
   psi.registerData(elec, elec[0]->DataSet);
   elec[0]->DataSet.allocate();
 
-  FakeRandom rg;
+  FakeRandom<QMCTraits::RealType> rg;
 
   QMCHamiltonian h;
   h.addOperator(std::make_unique<BareKineticEnergy>(elec, psi), "Kinetic");

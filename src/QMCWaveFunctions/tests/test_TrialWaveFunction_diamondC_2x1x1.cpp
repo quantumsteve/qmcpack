@@ -51,7 +51,7 @@ template<class DiracDet, class SPO_precision>
 void testTrialWaveFunction_diamondC_2x1x1(const int ndelay, const OffloadSwitches& offload_switches)
 {
 #if defined(MIXED_PRECISION)
-  const double grad_precision  = 1.3e-4;
+  const double grad_precision  = 1.0e-3;
   const double ratio_precision = 2e-4;
 #else
   const double grad_precision  = std::is_same<SPO_precision, float_tag>::value ? 1.3e-4 : 1e-8;

@@ -21,6 +21,5 @@ ContextForSteps<T>::ContextForSteps(RandomBase<T>& random_gen) : random_gen_(ran
 template<typename T>
 RandomBase<T>& ContextForSteps<T>::get_random_gen() { return random_gen_; }
 
-template class ContextForSteps<float>;
-template class ContextForSteps<double>;
+template class ContextForSteps<QMCTraits::RealType>;
 } // namespace qmcplusplus

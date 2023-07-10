@@ -32,7 +32,7 @@ public:
   void accumulate(const RefVector<MCPWalker>& walkers,
                   const RefVector<ParticleSet>& psets,
                   const RefVector<TrialWaveFunction>& wfns,
-                  RandomBase<double>& rng) override
+                  RandomBase<QMCT::RealType>& rng) override
   {}
 
   void registerOperatorEstimator(hdf_archive& file) override {}

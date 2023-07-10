@@ -23,7 +23,7 @@ public:
   SODMCUpdatePbyPWithRejectionFast(MCWalkerConfiguration& w,
                                    TrialWaveFunction& psi,
                                    QMCHamiltonian& h,
-                                   RandomBase<double>& rg);
+                                   RandomBase<QMCTraits::RealType>& rg);
   ///destructor
   ~SODMCUpdatePbyPWithRejectionFast() override;
 

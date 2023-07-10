@@ -76,7 +76,7 @@ TEST_CASE("DMC", "[drivers][dmc]")
   psi.registerData(elec, elec[0]->DataSet);
   elec[0]->DataSet.allocate();
 
-  FakeRandom rg;
+  FakeRandom<QMCTraits::RealType> rg;
 
   QMCHamiltonian h;
   std::unique_ptr<BareKineticEnergy> p_bke = std::make_unique<BareKineticEnergy>(elec, psi);
@@ -157,7 +157,7 @@ TEST_CASE("SODMC", "[drivers][dmc]")
   psi.registerData(elec, elec[0]->DataSet);
   elec[0]->DataSet.allocate();
 
-  FakeRandom rg;
+  FakeRandom<QMCTraits::RealType> rg;
 
   QMCHamiltonian h;
   std::unique_ptr<BareKineticEnergy> p_bke = std::make_unique<BareKineticEnergy>(elec, psi);

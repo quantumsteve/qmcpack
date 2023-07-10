@@ -40,8 +40,7 @@ protected:
   RandomBase<T>& random_gen_;
 };
 
-extern template class ContextForSteps<float>;
-extern template class ContextForSteps<double>;
+extern template class ContextForSteps<QMCTraits::RealType>;
 
 } // namespace qmcplusplus
 #endif

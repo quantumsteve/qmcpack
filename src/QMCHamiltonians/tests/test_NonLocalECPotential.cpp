@@ -162,8 +162,8 @@ TEST_CASE("NonLocalECPotential", "[hamiltonian]")
   UPtr<OperatorBase> nl_ecp2_ptr = nl_ecp.makeClone(elec2, psi2);
   auto& nl_ecp2                  = dynamic_cast<NonLocalECPotential&>(*nl_ecp2_ptr);
 
-  StdRandom<FullPrecReal> rng(10101);
-  StdRandom<FullPrecReal> rng2(10201);
+  StdRandom<Real> rng(10101);
+  StdRandom<Real> rng2(10201);
   nl_ecp.setRandomGenerator(&rng);
   nl_ecp2.setRandomGenerator(&rng2);
 

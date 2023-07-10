@@ -98,7 +98,7 @@ public:
     for (int i = 0; i < npoints; i++)
       CHECK(xgrid[i] == Approx(start + i * delta));
 
-    FakeRandom rng;
+    FakeRandom<QMCTraits::RealType> rng;
     magdens.generateRandomGrid(xgrid, rng, start, stop);
 
     for (int i = 0; i < npoints; i++)
@@ -427,7 +427,7 @@ TEST_CASE("MagnetizationDensity::IntegrationTest", "[estimators]")
   auto ref_psets(makeRefVector<ParticleSet>(psets));
   auto ref_twfcs(convertUPtrToRefVector(twfcs));
 
-  FakeRandom rng;
+  FakeRandom<QMCTraits::RealType> rng;
   magdensity.accumulate(ref_walkers, ref_psets, ref_twfcs, rng);
 
   //Now the reference data

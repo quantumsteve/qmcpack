@@ -16,7 +16,7 @@
 
 namespace qmcplusplus
 {
-TEST_CASE("FakeRandom determinism", "[utilities]")
+TEST_CASE("FakeRandom<QMCTraits::RealType> determinism", "[utilities]")
 {
   double expected = 0.5;
   FakeRandom<double> our_rng;
@@ -24,7 +24,7 @@ TEST_CASE("FakeRandom determinism", "[utilities]")
     CHECK(our_rng() == Approx(expected));
 }
 
-TEST_CASE("FakeRandom set_value", "[utilities]")
+TEST_CASE("FakeRandom<QMCTraits::RealType> set_value", "[utilities]")
 {
   FakeRandom<double> our_rng;
   double expected = 0.25;
@@ -33,7 +33,7 @@ TEST_CASE("FakeRandom set_value", "[utilities]")
     CHECK(our_rng() == Approx(expected));
 }
 
-TEST_CASE("FakeRandom read write", "[utilities]")
+TEST_CASE("FakeRandom<QMCTraits::RealType> read write", "[utilities]")
 {
   using DoubleRNG = FakeRandom<double>;
   DoubleRNG rng;
@@ -51,7 +51,7 @@ TEST_CASE("FakeRandom read write", "[utilities]")
     CHECK(rng2() == rng());
 }
 
-TEST_CASE("FakeRandom noops", "[utilities]")
+TEST_CASE("FakeRandom<QMCTraits::RealType> noops", "[utilities]")
 {
   using DoubleRNG = FakeRandom<double>;
   DoubleRNG rng;
@@ -75,7 +75,7 @@ TEST_CASE("FakeRandom noops", "[utilities]")
   CHECK(rng() == Approx(expected));
 }
 
-TEST_CASE("FakeRandom clone", "[utilities]")
+TEST_CASE("FakeRandom<QMCTraits::RealType> clone", "[utilities]")
 {
   using DoubleRNG = FakeRandom<double>;
   DoubleRNG rng;

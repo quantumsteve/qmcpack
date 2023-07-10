@@ -26,7 +26,10 @@ class VMCUpdatePbyP : public QMCUpdateBase
 {
 public:
   /// Constructor.
-  VMCUpdatePbyP(MCWalkerConfiguration& w, TrialWaveFunction& psi, QMCHamiltonian& h, RandomBase<double>& rg);
+  VMCUpdatePbyP(MCWalkerConfiguration& w,
+                TrialWaveFunction& psi,
+                QMCHamiltonian& h,
+                RandomBase<QMCTraits::RealType>& rg);
 
   ~VMCUpdatePbyP() override;
 

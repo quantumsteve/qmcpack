@@ -62,7 +62,7 @@ TEST_CASE("QMCUpdate", "[drivers]")
   tspecies(chargeIdx, upIdx) = -1;
   tspecies(massIdx, upIdx)   = 1.0;
 
-  FakeRandom rg;
+  FakeRandom<QMCTraits::RealType> rg;
 
   QMCHamiltonian h;
   RuntimeOptions runtime_options;

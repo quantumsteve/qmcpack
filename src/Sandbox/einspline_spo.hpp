@@ -149,9 +149,9 @@ struct einspline_spo
       pos_type start(0);
       pos_type end(1);
       einsplines.resize(nBlocks);
-      RandomGenerator myrandom(11);
+      auto myrandom = createRandomGenerator(11);
       Array<double, 3> data(nx, ny, nz);
-      std::generate(data.begin(), data.end(), myrandom);
+      std::generate(data.begin(), data.end(), std::ref(*myrandom));
 
       // prepare spline grid specs
       Ugrid grid[3];

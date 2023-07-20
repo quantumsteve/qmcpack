@@ -28,11 +28,11 @@ using namespace std;
 #include "QMCWaveFunctions/Fermion/DelayedUpdate.h"
 using namespace qmcplusplus;
 
-template<typename RNG, typename T>
-inline void generate(RNG& rng, T* restrict data, size_t n)
+template<typename T>
+inline void generate(StdRandom<QMCTraits::FullPrecRealType>& rng, T* restrict data, size_t n)
 {
   constexpr T shift(0.5);
-  std::generate(data, data + n, rng);
+  std::generate(data, data + n, std::ref(rng));
   for (int i = 0; i < n; ++i)
     data[i] -= shift;
 }
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
     const int teamID = ip / ncrews;
     const int crewID = ip % ncrews;
 
-    RandomGenerator random_th(myPrimes[ip]);
+    StdRandom<QMCTraits::FullPrecRealType> random_th(myPrimes[ip]);
 
     Matrix<ValueType> psiM(nels, nels), psiM_inv(nels, nels);
     Vector<ValueType> psiV(nels), invRow(nels);

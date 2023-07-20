@@ -60,7 +60,7 @@ int main(int argc, char** argv)
   using LatticeType      = ParticleSet::ParticleLayout;
   using TensorType       = ParticleSet::TensorType;
   using PosType          = ParticleSet::PosType;
-  using uint_type        = RandomGenerator::uint_type;
+  using uint_type        = RandomBase<FullPrecRealType>::uint_type;
   using Walker_t         = MCWalkerConfiguration::Walker_t;
 
   //use the global generator

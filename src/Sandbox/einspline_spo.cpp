@@ -155,7 +155,7 @@ int main(int argc, char** argv)
     const int crewID = ip % ncrews;
 
     //create generator within the thread
-    RandomGenerator random_th(MakeSeed(teamID, np));
+    StdRandom<QMCTraits::FullPrecRealType> random_th(MakeSeed(teamID, np));
 
     ParticleSet ions(super_lattice), els(super_lattice);
     tile_cell(ions, tmat);

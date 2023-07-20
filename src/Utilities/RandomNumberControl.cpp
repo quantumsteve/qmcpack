@@ -83,7 +83,7 @@ void RandomNumberControl::make_children()
   int n        = nthreads - Children.size();
   while (n)
   {
-    Children.push_back(std::make_unique<RandomGenerator>());
+    Children.push_back(createRandomGenerator());
     n--;
   }
   int rank       = OHMMS::Controller->rank();

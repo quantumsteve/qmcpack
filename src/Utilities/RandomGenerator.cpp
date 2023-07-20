@@ -14,10 +14,15 @@
 #include "RandomGenerator.h"
 #include <ctime>
 
-uint32_t make_seed(int i, int n) { return static_cast<uint32_t>(std::time(0)) % 10474949 + (i + 1) * n + i; }
-
 namespace qmcplusplus
 {
+uint32_t make_seed(int i, int n) { return static_cast<uint32_t>(std::time(0)) % 10474949 + (i + 1) * n + i; }
+
+std::unique_ptr<RandomBase<OHMMS_PRECISION_FULL>> createRandomGenerator(
+    RandomBase<OHMMS_PRECISION_FULL>::uint_type iseed)
+{
+  return std::make_unique<RandomGenerator>(iseed);
+}
 
 template<class RNG>
 typename RNG::result_type RNGThreadSafe<RNG>::operator()()

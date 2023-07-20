@@ -77,6 +77,7 @@ int main(int argc, char** argv)
   Random.init(iseed);
 
   using RealType    = QMCTraits::RealType;
+  using FullPrecRealType = QMCTraits::FullPrecRealType;
   using ParticlePos = ParticleSet::ParticlePos;
   using LatticeType = ParticleSet::ParticleLayout;
   using TensorType  = ParticleSet::TensorType;
@@ -85,7 +86,7 @@ int main(int argc, char** argv)
   Tensor<int, 3> tmat(na, 0, 0, 0, nb, 0, 0, 0, nc);
   double t0 = 0.0, t1 = 0.0;
 
-  RandomGenerator random_th(11);
+  StdRandom<FullPrecRealType> random_th(11);
 
   auto super_lattice(createSuperLattice(create_prim_lattice(), tmat));
   super_lattice.LR_rc = 5;

@@ -34,10 +34,14 @@
 #include "FakeRandom.h"
 #include "StdRandom.h"
 
-uint32_t make_seed(int i, int n);
 
 namespace qmcplusplus
 {
+uint32_t make_seed(int i, int n);
+
+std::unique_ptr<RandomBase<OHMMS_PRECISION_FULL>> createRandomGenerator(
+    RandomBase<OHMMS_PRECISION_FULL>::uint_type iseed = 911);
+
 template<class RNG>
 class RNGThreadSafe : public RNG
 {
@@ -51,6 +55,7 @@ public:
 
 extern template class RNGThreadSafe<FakeRandom<OHMMS_PRECISION_FULL>>;
 extern template class RNGThreadSafe<StdRandom<OHMMS_PRECISION_FULL>>;
+
 
 #if defined(USE_FAKE_RNG)
 // fake RNG redirection

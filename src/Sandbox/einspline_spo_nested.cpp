@@ -133,7 +133,7 @@ int main(int argc, char** argv)
     const int ip = omp_get_thread_num();
 
     //create generator within the thread
-    RandomGenerator random_th(MakeSeed(ip, np));
+    StdRandom<QMCTraits::FullPrecRealType> random_th(MakeSeed(ip, np));
 
     ParticleSet ions(super_lattice), els(super_lattice);
     tile_cell(ions, tmat);
@@ -178,7 +178,7 @@ int main(int argc, char** argv)
       const RealType Rmax(1.7);
       const RealType tau = 2.0;
 
-      RandomGenerator my_random(random_th);
+      StdRandom<QMCTraits::FullPrecRealType> my_random(random_th);
       NonLocalPP<OHMMS_PRECISION> ecp(random_th);
 
       const int nknots(ecp.size());

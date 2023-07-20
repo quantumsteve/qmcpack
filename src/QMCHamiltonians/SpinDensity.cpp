@@ -229,7 +229,7 @@ SpinDensity::Return_t SpinDensity::evaluate(ParticleSet& P)
 void SpinDensity::test(int moves, ParticleSet& P)
 {
   app_log() << "  SpinDensity test" << std::endl;
-  RandomGenerator rng;
+  auto rng = createRandomGenerator();
   int particles = P.getTotalNum();
   int pmin      = std::numeric_limits<int>::max();
   int pmax      = std::numeric_limits<int>::min();
@@ -239,7 +239,7 @@ void SpinDensity::test(int moves, ParticleSet& P)
     {
       PosType u;
       for (int d = 0; d < DIM; ++d)
-        u[d] = rng();
+        u[d] = (*rng)();
       P.R[p] = P.getLattice().toCart(u);
     }
     test_evaluate(P, pmin, pmax);

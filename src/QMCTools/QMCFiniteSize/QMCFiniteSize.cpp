@@ -502,15 +502,13 @@ void QMCFiniteSize::calcPotentialCorrection()
   vsums.resize(NumSamples);
   vints.resize(NumSamples);
 
-  RandomGenerator rng;
-#pragma omp parallel for
+  StdRandom<FullPrecRealType> rng;
   for (int i = 0; i < NumSamples; i++)
   {
     std::vector<RealType> newSK_raw(SK_raw.size());
     for (int j = 0; j < SK_raw.size(); j++)
     {
-      FullPrecRealType chi;
-      chi          = rng();
+      FullPrecRealType chi = rng();
       newSK_raw[j] = SK_raw[j] + SKerr_raw[j] * chi;
     }
     vsums[i] = calcPotentialDiscrete(newSK_raw);
@@ -518,8 +516,7 @@ void QMCFiniteSize::calcPotentialCorrection()
     std::vector<RealType> newSK(SK.size());
     for (int j = 0; j < SK.size(); j++)
     {
-      FullPrecRealType chi;
-      chi      = rng();
+      FullPrecRealType chi = rng();
       newSK[j] = SK[j] + SKerr[j] * chi;
     }
     vints[i] = calcPotentialInt(newSK);
@@ -537,17 +534,15 @@ void QMCFiniteSize::calcPotentialCorrection()
 
 void QMCFiniteSize::calcLeadingOrderCorrections()
 {
-  RandomGenerator rng;
+  StdRandom<FullPrecRealType> rng;
 
   std::vector<RealType> bs(NumSamples);
-#pragma omp parallel for
   for (int i = 0; i < NumSamples; i++)
   {
     std::vector<RealType> newSK(SK.size());
     for (int j = 0; j < SK.size(); j++)
     {
-      FullPrecRealType chi;
-      chi      = rng();
+      FullPrecRealType chi = rng();
       newSK[j] = SK[j] + SKerr[j] * chi;
     }
     UBspline_3d_d* spline = getSkSpline(newSK);

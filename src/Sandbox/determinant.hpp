@@ -153,7 +153,7 @@ struct DiracDet
   ///internal storage to perform inversion correctly
   Matrix<INVT> psiM; //matrix to be inverted
   ///random number generator for testing
-  RandomGenerator myRandom;
+  StdRandom<QMCTraits::FullPrecRealType> myRandom;
 
   //temporary workspace for inversion
   aligned_vector<int> pivot;
@@ -170,7 +170,7 @@ struct DiracDet
     psiMsave.resize(nels, nels);
   }
 
-  void initialize(RandomGenerator RNG)
+  void initialize(const StdRandom<QMCTraits::FullPrecRealType> & RNG)
   {
     int nels = psiM.rows();
     //get lwork and resize workspace

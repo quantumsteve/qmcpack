@@ -28,6 +28,7 @@ set(WFBASE_SRCS
     WaveFunctionComponent.cpp
     WaveFunctionComponentBuilder.cpp
     SPOSetBuilder.cpp
+    SPOSetBuilderT.cpp
     SPOInfo.cpp
     SPOSetInfo.cpp
     SPOSetInputInfo.cpp
@@ -71,14 +72,14 @@ if(OHMMS_DIM MATCHES 3)
 
   set(JASTROW_SRCS ${JASTROW_SRCS} Jastrow/eeI_JastrowBuilder.cpp Jastrow/CountingJastrowBuilder.cpp)
 
-  set(FERMION_SRCS ${FERMION_SRCS} LCAO/LCAOrbitalSet.cpp LCAO/LCAOrbitalSetT.cpp LCAO/LCAOrbitalBuilder.cpp LCAO/MultiQuinticSpline1D.cpp
+  set(FERMION_SRCS ${FERMION_SRCS} LCAO/LCAOrbitalSet.cpp LCAO/LCAOrbitalSetT.cpp LCAO/LCAOrbitalBuilder.cpp LCAO/LCAOrbitalBuilderT.cpp LCAO/MultiQuinticSpline1D.cpp
                    LCAO/AOBasisBuilder.cpp LCAO/SoaLocalizedBasisSet.cpp)
   if(QMC_COMPLEX)
     set(FERMION_SRCS ${FERMION_SRCS} LCAO/LCAOSpinorBuilder.cpp)
   else(QMC_COMPLEX)
     #LCAO cusp correction is not ready for complex
     set(FERMION_SRCS ${FERMION_SRCS} LCAO/LCAOrbitalSetWithCorrection.cpp LCAO/LCAOrbitalSetWithCorrectionT.cpp
-                     LCAO/CuspCorrectionConstruction.cpp LCAO/SoaCuspCorrection.cpp)
+	    LCAO/CuspCorrectionConstruction.cpp LCAO/SoaCuspCorrection.cpp LCAO/SoaCuspCorrectionT.cpp)
   endif(QMC_COMPLEX)
 
   if(HAVE_EINSPLINE)

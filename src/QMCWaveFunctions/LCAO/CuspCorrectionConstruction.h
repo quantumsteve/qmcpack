@@ -15,6 +15,7 @@
 #define QMCPLUSPLUS_CUSP_CORRECTION_CONSTRUCTOR_H
 
 #include "LCAOrbitalSet.h"
+#include "SoaCuspCorrectionT.h"
 #include "SoaCuspCorrection.h"
 #include "CuspCorrection.h"
 
@@ -114,13 +115,14 @@ void splitPhiEta(int center, const std::vector<bool>& corrCenter, LCAOrbitalSet&
 void removeSTypeOrbitals(const std::vector<bool>& corrCenter, LCAOrbitalSet& Phi);
 
 /// Compute the radial part of the corrected wavefunction
+template<typename T>
 void computeRadialPhiBar(ParticleSet* targetP,
                          ParticleSet* sourceP,
                          int curOrb_,
                          int curCenter_,
                          SPOSet* Phi,
-                         Vector<QMCTraits::RealType>& xgrid,
-                         Vector<QMCTraits::RealType>& rad_orb,
+                         Vector<T>& xgrid,
+                         Vector<T>& rad_orb,
                          const CuspCorrectionParameters& data);
 
 using RealType    = QMCTraits::RealType;
@@ -265,6 +267,14 @@ void minimizeForRc(CuspCorrection& cusp,
                    ValueVector& ELideal);
 
 // Modifies orbital set lcwc
+template <typename T>
+void applyCuspCorrection(const Matrix<CuspCorrectionParameters>& info,
+                         ParticleSet& targetPtcl,
+                         ParticleSet& sourcePtcl,
+                         LCAOrbitalSet& lcao,
+                         SoaCuspCorrectionT<T>& cusp,
+                         const std::string& id);
+
 void applyCuspCorrection(const Matrix<CuspCorrectionParameters>& info,
                          ParticleSet& targetPtcl,
                          ParticleSet& sourcePtcl,

@@ -275,27 +275,6 @@ void removeSTypeOrbitals(const std::vector<bool>& corrCenter, LCAOrbitalSet& Phi
   }
 }
 
-
-// Will be the corrected value for r < rc and the original wavefunction for r > rc
-void computeRadialPhiBar(ParticleSet* targetP,
-                         ParticleSet* sourceP,
-                         int curOrb_,
-                         int curCenter_,
-                         SPOSet* Phi,
-                         Vector<QMCTraits::RealType>& xgrid,
-                         Vector<QMCTraits::RealType>& rad_orb,
-                         const CuspCorrectionParameters& data)
-{
-  OneMolecularOrbital phiMO(targetP, sourceP, Phi);
-  phiMO.changeOrbital(curCenter_, curOrb_);
-  CuspCorrection cusp(data);
-
-  for (int i = 0; i < xgrid.size(); i++)
-  {
-    rad_orb[i] = phiBar(cusp, xgrid[i], phiMO);
-  }
-}
-
 using RealType = QMCTraits::RealType;
 
 // Get the ideal local energy at one point
@@ -313,16 +292,24 @@ RealType getOneIdealLocalEnergy(RealType r, RealType Z, RealType beta0)
   return idealEL * Z * Z;
 }
 
-// Get the ideal local energy for a vector of positions
-void getIdealLocalEnergy(const ValueVector& pos, RealType Z, RealType Rc, RealType ELorigAtRc, ValueVector& ELideal)
+// Will be the corrected value for r < rc and the original wavefunction for r > rc
+template<typename T>
+void computeRadialPhiBar(ParticleSet* targetP,
+                         ParticleSet* sourceP,
+                         int curOrb_,
+                         int curCenter_,
+                         SPOSet* Phi,
+                         Vector<T>& xgrid,
+                         Vector<T>& rad_orb,
+                         const CuspCorrectionParameters& data)
 {
-  // assert(pos.size() == ELideal.size()
-  RealType beta0 = 0.0;
-  RealType tmp   = getOneIdealLocalEnergy(Rc, Z, beta0);
-  beta0          = (ELorigAtRc - tmp) / (Z * Z);
-  for (int i = 0; i < pos.size(); i++)
+  OneMolecularOrbital phiMO(targetP, sourceP, Phi);
+  phiMO.changeOrbital(curCenter_, curOrb_);
+  CuspCorrection cusp(data);
+
+  for (int i = 0; i < xgrid.size(); i++)
   {
-    ELideal[i] = getOneIdealLocalEnergy(pos[i], Z, beta0);
+    rad_orb[i] = phiBar(cusp, xgrid[i], phiMO);
   }
 }
 
@@ -658,6 +645,102 @@ void applyCuspCorrection(const Matrix<CuspCorrectionParameters>& info,
   removeSTypeOrbitals(corrCenter, lcao);
 }
 
+// Modifies orbital set lcwc
+template <class T>
+void applyCuspCorrection(const Matrix<CuspCorrectionParameters>& info,
+                         ParticleSet& targetPtcl,
+                         ParticleSet& sourcePtcl,
+                         LCAOrbitalSet& lcao,
+                         SoaCuspCorrectionT<T>& cusp,
+                         const std::string& id)
+{
+  const int num_centers      = info.rows();
+  const int orbital_set_size = info.cols();
+  using RealType             = typename SPOSetT<T>::RealType;
+
+  NewTimer& cuspApplyTimer = createGlobalTimer("CuspCorrectionConstruction::applyCuspCorrection", timer_level_medium);
+
+  ScopedTimer cuspApplyTimerWrapper(cuspApplyTimer);
+
+  LCAOrbitalSet phi("phi", std::unique_ptr<LCAOrbitalSet::basis_type>(lcao.myBasisSet->makeClone()));
+  phi.setOrbitalSetSize(lcao.getOrbitalSetSize());
+
+  LCAOrbitalSet eta("eta", std::unique_ptr<LCAOrbitalSet::basis_type>(lcao.myBasisSet->makeClone()));
+  eta.setOrbitalSetSize(lcao.getOrbitalSetSize());
+
+  std::vector<bool> corrCenter(num_centers, "true");
+
+  //What's this grid's lifespan?  Why on the heap?
+  auto radial_grid = std::make_unique<LogGrid<RealType>>();
+  radial_grid->set(0.000001, 100.0, 1001);
+
+
+  Vector<RealType> xgrid;
+  Vector<RealType> rad_orb;
+  xgrid.resize(radial_grid->size());
+  rad_orb.resize(radial_grid->size());
+  for (int ig = 0; ig < radial_grid->size(); ig++)
+  {
+    xgrid[ig] = radial_grid->r(ig);
+  }
+
+  for (int ic = 0; ic < num_centers; ic++)
+  {
+    *eta.C = *lcao.C;
+    *phi.C = *lcao.C;
+
+    splitPhiEta(ic, corrCenter, phi, eta);
+
+    // loop over MO index - cot must be an array (of len MO size)
+    //   the loop is inside cot - in the multiqunitic
+    auto cot = std::make_unique<CuspCorrectionAtomicBasis<RealType>>();
+    cot->initializeRadialSet(*radial_grid, orbital_set_size);
+    //How is this useful?
+    // cot->ID.resize(orbital_set_size);
+    // for (int mo_idx = 0; mo_idx < orbital_set_size; mo_idx++) {
+    //   cot->ID[mo_idx] = mo_idx;
+    // }
+
+    for (int mo_idx = 0; mo_idx < orbital_set_size; mo_idx++)
+    {
+      computeRadialPhiBar(&targetPtcl, &sourcePtcl, mo_idx, ic, &phi, xgrid, rad_orb, info(ic, mo_idx));
+      RealType yprime_i = (rad_orb[1] - rad_orb[0]) / (radial_grid->r(1) - radial_grid->r(0));
+      OneDimQuinticSpline<RealType> radial_spline(radial_grid->makeClone(), rad_orb);
+      radial_spline.spline(0, yprime_i, rad_orb.size() - 1, 0.0);
+      cot->addSpline(mo_idx, radial_spline);
+
+      if (outputManager.isDebugActive())
+      {
+        // For testing against AoS output
+        // Output phiBar to soaOrbs.downdet.C0.MO0
+        int nElms   = 500;
+        RealType dx = info(ic, mo_idx).Rc * 1.2 / nElms;
+        Vector<RealType> pos;
+        Vector<RealType> output_orb;
+        pos.resize(nElms);
+        output_orb.resize(nElms);
+        for (int i = 0; i < nElms; i++)
+        {
+          pos[i] = (i + 1.0) * dx;
+        }
+        computeRadialPhiBar(&targetPtcl, &sourcePtcl, mo_idx, ic, &phi, pos, output_orb, info(ic, mo_idx));
+        std::string filename = "soaOrbs." + id + ".C" + std::to_string(ic) + ".MO" + std::to_string(mo_idx);
+        std::cout << "Writing to " << filename << std::endl;
+        std::ofstream out(filename.c_str());
+        out << "# r phiBar(r)" << std::endl;
+        for (int i = 0; i < nElms; i++)
+        {
+          out << pos[i] << "  " << output_orb[i] << std::endl;
+        }
+        out.close();
+      }
+    }
+    cusp.add(ic, std::move(cot));
+  }
+  removeSTypeOrbitals(corrCenter, lcao);
+}
+
+
 void generateCuspInfo(Matrix<CuspCorrectionParameters>& info,
                       const ParticleSet& targetPtcl,
                       const ParticleSet& sourcePtcl,
@@ -785,5 +868,36 @@ void generateCuspInfo(Matrix<CuspCorrectionParameters>& info,
     }
   }
 }
+
+template void applyCuspCorrection<double>(const Matrix<CuspCorrectionParameters>& info,
+                         ParticleSet& targetPtcl,
+                         ParticleSet& sourcePtcl,
+                         LCAOrbitalSet& lcao,
+                         SoaCuspCorrectionT<double>& cusp,
+                         const std::string& id);
+template void applyCuspCorrection<float>(const Matrix<CuspCorrectionParameters>& info,
+                         ParticleSet& targetPtcl,
+                         ParticleSet& sourcePtcl,
+                         LCAOrbitalSet& lcao,
+                         SoaCuspCorrectionT<float>& cusp,
+                         const std::string& id);
+
+template void computeRadialPhiBar<double>(ParticleSet* targetP,
+                         ParticleSet* sourceP,
+                         int curOrb_,
+                         int curCenter_,
+                         SPOSet* Phi,
+                         Vector<double>& xgrid,
+                         Vector<double>& rad_orb,
+                         const CuspCorrectionParameters& data);
+
+template void computeRadialPhiBar<float>(ParticleSet* targetP,
+                         ParticleSet* sourceP,
+                         int curOrb_,
+                         int curCenter_,
+                         SPOSet* Phi,
+                         Vector<float>& xgrid,
+                         Vector<float>& rad_orb,
+                         const CuspCorrectionParameters& data);
 
 } // namespace qmcplusplus

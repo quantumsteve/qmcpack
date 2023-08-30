@@ -112,8 +112,8 @@ LCAOrbitalBuilderT<T>::LCAOrbitalBuilderT(ParticleSet& els, ParticleSet& ions, C
       SuperTwist(0.0),
       doCuspCorrection(false)
 {
-  ClassName = "LCAOrbitalBuilder";
-  ReportEngine PRE(ClassName, "createBasisSet");
+  this->ClassName = "LCAOrbitalBuilder";
+  ReportEngine PRE(this->ClassName, "createBasisSet");
 
   std::string cuspC("no"); // cusp correction
   OhmmsAttributeSet aAttrib;
@@ -195,7 +195,7 @@ std::unique_ptr<typename LCAOrbitalBuilderT<T>::BasisSet_t> LCAOrbitalBuilderT<T
     xmlNodePtr cur,
     xmlNodePtr parent)
 {
-  ReportEngine PRE(ClassName, "loadBasisSetFromXML(xmlNodePtr)");
+  ReportEngine PRE(this->ClassName, "loadBasisSetFromXML(xmlNodePtr)");
   int ylm = -1;
   {
     xmlNodePtr cur1 = cur->xmlChildrenNode;
@@ -260,7 +260,7 @@ std::unique_ptr<typename LCAOrbitalBuilderT<T>::BasisSet_t> LCAOrbitalBuilderT<T
 template<class T>
 std::unique_ptr<typename LCAOrbitalBuilderT<T>::BasisSet_t> LCAOrbitalBuilderT<T>::loadBasisSetFromH5(xmlNodePtr parent)
 {
-  ReportEngine PRE(ClassName, "loadBasisSetFromH5()");
+  ReportEngine PRE(this->ClassName, "loadBasisSetFromH5()");
 
   hdf_archive hin(this->myComm);
   int ylm = -1;
@@ -321,9 +321,9 @@ std::unique_ptr<typename LCAOrbitalBuilderT<T>::BasisSet_t> LCAOrbitalBuilderT<T
 
 template<class T>
 template<int I, int J>
-LCAOrbitalBuilderT<T>::BasisSet_t* LCAOrbitalBuilderT<T>::createBasisSet(xmlNodePtr cur)
+typename LCAOrbitalBuilderT<T>::BasisSet_t* LCAOrbitalBuilderT<T>::createBasisSet(xmlNodePtr cur)
 {
-  ReportEngine PRE(ClassName, "createBasisSet(xmlNodePtr)");
+  ReportEngine PRE(this->ClassName, "createBasisSet(xmlNodePtr)");
 
   using ao_type    = typename ao_traits<RealType, ValueType, I, J>::ao_type;
   using basis_type = typename ao_traits<RealType, ValueType, I, J>::basis_type;
@@ -374,9 +374,9 @@ LCAOrbitalBuilderT<T>::BasisSet_t* LCAOrbitalBuilderT<T>::createBasisSet(xmlNode
 
 template<class T>
 template<int I, int J>
-LCAOrbitalBuilderT<T>::BasisSet_t* LCAOrbitalBuilderT<T>::createBasisSetH5()
+typename LCAOrbitalBuilderT<T>::BasisSet_t* LCAOrbitalBuilderT<T>::createBasisSetH5()
 {
-  ReportEngine PRE(ClassName, "createBasisSetH5(xmlNodePtr)");
+  ReportEngine PRE(this->ClassName, "createBasisSetH5(xmlNodePtr)");
 
   using ao_type    = typename ao_traits<RealType, ValueType, I, J>::ao_type;
   using basis_type = typename ao_traits<RealType, ValueType, I, J>::basis_type;
@@ -459,7 +459,7 @@ LCAOrbitalBuilderT<T>::BasisSet_t* LCAOrbitalBuilderT<T>::createBasisSetH5()
 template<class T>
 std::unique_ptr<SPOSetT<T>> LCAOrbitalBuilderT<T>::createSPOSetFromXML(xmlNodePtr cur)
 {
-  ReportEngine PRE(ClassName, "createSPO(xmlNodePtr)");
+  ReportEngine PRE(this->ClassName, "createSPO(xmlNodePtr)");
   std::string spo_name(""), cusp_file(""), optimize("no");
   std::string basisset_name("LCAOBSet");
   OhmmsAttributeSet spoAttrib;

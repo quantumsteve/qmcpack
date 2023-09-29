@@ -121,7 +121,7 @@ if(OHMMS_DIM MATCHES 3)
     if(QMC_COMPLEX)
       set(FERMION_SRCS ${FERMION_SRCS}
         EinsplineSpinorSetBuilder.cpp 
-        EinsplineSpinorSetBuilderT.cpp 
+        EinsplineSpinorSetBuilderT.cpp) 
       set(FERMION_OMPTARGET_SRCS ${FERMION_OMPTARGET_SRCS}
         EinsplineSpinorSetBuilder.cpp)
       set(FERMION_OMPTARGET_SRCS ${FERMION_OMPTARGET_SRCS})

@@ -1339,10 +1339,10 @@ ParticleSetT<T>::convert2CartInBox(const ParticlePos& pin, ParticlePos& pout)
 }
 
 // explicit instantiations
-#ifndef QMC_COMPLEX
+//#ifndef QMC_COMPLEX
 template class ParticleSetT<double>;
 template class ParticleSetT<float>;
-#else
+#ifdef QMC_COMPLEX
 template class ParticleSetT<std::complex<double>>;
 template class ParticleSetT<std::complex<float>>;
 #endif

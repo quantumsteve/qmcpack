@@ -310,7 +310,7 @@ template class MCWalkerConfigurationT<double>;
 // template class MCWalkerConfigurationT<float>;
 #else
 template class MCWalkerConfigurationT<std::complex<double>>;
-template class MCWalkerConfigurationT<std::complex<float>>;
+// template class MCWalkerConfigurationT<std::complex<float>>;
 #endif
 
 } // namespace qmcplusplus

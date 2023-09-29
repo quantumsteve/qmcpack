@@ -26,7 +26,7 @@ struct ParticleSetTraits
     using PosType = TinyVector<RealType, DIM>;
     using GradType = TinyVector<ValueType, DIM>;
     // using HessType = Tensor<ValueType, DIM>;
-    // using TensorType = Tensor<ValueType, DIM>;
+    using TensorType = Tensor<ValueType, DIM>;
     // using GradHessType = TinyVector<Tensor<ValueType, DIM>, DIM>;
     // using IndexVector = Vector<IndexType>;
     // using ValueVector = Vector<ValueType>;

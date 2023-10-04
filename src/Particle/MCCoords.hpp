@@ -19,7 +19,7 @@
 namespace qmcplusplus
 {
 template<CoordsType MCT>
-using MCCoords = MCCoordsT<QMCTraits::ValueType, MCT>;
+using MCCoords = MCCoordsT<QMCTraits::RealType, MCT>;
 
 } // namespace qmcplusplus
 

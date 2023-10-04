@@ -24,7 +24,7 @@
 
 namespace qmcplusplus
 {
-using ParticleSet = ParticleSetT<QMCTraits::ValueType>;
+using ParticleSet = ParticleSetT<QMCTraits::RealType>;
 
 } // namespace qmcplusplus
 #endif

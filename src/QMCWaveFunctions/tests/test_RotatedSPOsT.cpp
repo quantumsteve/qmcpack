@@ -83,7 +83,19 @@ getHistoryParams(RotatedSPOsT<double>& rot)
 }
 } // namespace testing
 
-using TestTypeList = std::tuple<double/*, float*/>;
+#ifndef QMC_COMPLEX
+#ifndef MIXED_PRECISION
+using TestTypeList = std::tuple<double>;
+#else
+using TestTypeList = std::tuple<float>;
+#endif
+#else
+#ifndef MIXED_PRECISION
+using TestTypeList = std::tuple<std::complex<double>>;
+#else
+using TestTypeList = std::tuple<std::complex<float>>;
+#endif
+#endif
 
 /*
   JPT 04.01.2022: Adapted from test_einset.cpp

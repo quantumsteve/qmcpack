@@ -306,11 +306,17 @@ MCWalkerConfigurationT<T>::clearEnsemble()
 }
 
 #ifndef QMC_COMPLEX
+#ifndef MIXED_PRECISION
 template class MCWalkerConfigurationT<double>;
-// template class MCWalkerConfigurationT<float>;
 #else
+template class MCWalkerConfigurationT<float>;
+#endif
+#else
+#ifndef MIXED_PRECISION
 template class MCWalkerConfigurationT<std::complex<double>>;
-// template class MCWalkerConfigurationT<std::complex<float>>;
+#else
+template class MCWalkerConfigurationT<std::complex<float>>;
+#endif
 #endif
 
 } // namespace qmcplusplus

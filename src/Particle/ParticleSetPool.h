@@ -23,7 +23,8 @@
 
 namespace qmcplusplus
 {
-using ParticleSetPool = ParticleSetPoolT<QMCTraits::RealType>;
+
+using ParticleSetPool = ParticleSetPoolT<QMCTraits::ValueType>;
 
 } // namespace qmcplusplus
 #endif

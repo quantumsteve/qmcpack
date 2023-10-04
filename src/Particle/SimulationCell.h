@@ -18,7 +18,7 @@
 
 namespace qmcplusplus
 {
-using SimulationCell = SimulationCellT<QMCTraits::RealType>;
+using SimulationCell = SimulationCellT<QMCTraits::ValueType>;
 
 } // namespace qmcplusplus
 #endif

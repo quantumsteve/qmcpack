@@ -20,7 +20,7 @@
 
 namespace qmcplusplus
 {
-using KContainer = KContainerT<QMCTraits::RealType>;
+using KContainer = KContainerT<QMCTraits::ValueType>;
 
 } // namespace qmcplusplus
 

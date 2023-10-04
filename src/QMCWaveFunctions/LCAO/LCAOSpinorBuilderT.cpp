@@ -205,6 +205,8 @@ LCAOSpinorBuilderT<T>::putFromH5(
     return success;
 }
 
+#ifdef QMC_COMPLEX
 template class LCAOSpinorBuilderT<std::complex<double>>;
 template class LCAOSpinorBuilderT<std::complex<float>>;
+#endif
 } // namespace qmcplusplus

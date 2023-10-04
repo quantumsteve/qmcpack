@@ -669,8 +669,7 @@ LCAOrbitalBuilderT<T>::createSPOSetFromXML(xmlNodePtr cur)
 
     std::unique_ptr<SPOSetT<T>> sposet;
     if (doCuspCorrection) {
-        createWithCuspCorrection(
-            cur, spo_name, cusp_file, std::move(myBasisSet));
+      sposet = createWithCuspCorrection(cur, spo_name, cusp_file, std::move(myBasisSet));
     }
     else {
         auto lcos = std::make_unique<LCAOrbitalSetT<T>>(

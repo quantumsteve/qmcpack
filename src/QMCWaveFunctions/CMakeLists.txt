@@ -58,9 +58,7 @@ set(JASTROW_OMPTARGET_SRCS
     Jastrow/TwoBodyJastrow.cpp
     Jastrow/BsplineFunctor.cpp)
 set(FERMION_SRCS ${FERMION_SRCS}
-    ElectronGas/FreeOrbital.cpp
     ElectronGas/FreeOrbitalT.cpp
-    ElectronGas/FreeOrbitalBuilder.cpp
     ElectronGas/FreeOrbitalBuilderT.cpp)
 
 # wavefunctions only availbale to 3-dim problems
@@ -73,20 +71,15 @@ if(OHMMS_DIM MATCHES 3)
       LCAO/LCAOrbitalBuilderT.cpp
       LCAO/MultiQuinticSpline1D.cpp
       LCAO/AOBasisBuilderT.cpp
-      LCAO/SoaLocalizedBasisSet.cpp
       LCAO/SoaLocalizedBasisSetT.cpp
       LCAO/LCAOSpinorBuilderT.cpp
       LCAO/SoaCuspCorrectionT.cpp)
-  if(QMC_COMPLEX)
-    set(FERMION_SRCS ${FERMION_SRCS} LCAO/LCAOSpinorBuilder.cpp)
-  else(QMC_COMPLEX)
+  if(NOT QMC_COMPLEX)
     #LCAO cusp correction is not ready for complex
     set(FERMION_SRCS ${FERMION_SRCS}
-        LCAO/LCAOrbitalSetWithCorrection.cpp
         LCAO/LCAOrbitalSetWithCorrectionT.cpp
-        LCAO/CuspCorrectionConstructionT.cpp
-        LCAO/SoaCuspCorrection.cpp)
-  endif(QMC_COMPLEX)
+        LCAO/CuspCorrectionConstructionT.cpp)
+  endif()
 
   if(HAVE_EINSPLINE)
     set(FERMION_SRCS
@@ -95,7 +88,6 @@ if(OHMMS_DIM MATCHES 3)
         BsplineFactory/createBsplineReaderT.cpp
         BsplineFactory/createComplexDouble.cpp
         BsplineFactory/createComplexSingle.cpp
-        BsplineFactory/HybridRepCenterOrbitals.cpp
         BsplineFactory/HybridRepCenterOrbitalsT.cpp
         BandInfo.cpp
         BsplineFactory/SplineC2RT.cpp

@@ -14,6 +14,8 @@
 #define QMCPLUSPLUS_SOA_LCAO_SPINOR_BUILDER_H
 
 #include "QMCWaveFunctions/LCAO/LCAOrbitalBuilder.h"
+#include "QMCWaveFunctions/LCAO/LCAOrbitalSet.h"
+#include "QMCWaveFunctions/SPOSet.h"
 
 namespace qmcplusplus
 {

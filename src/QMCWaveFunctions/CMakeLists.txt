@@ -83,8 +83,6 @@ if(OHMMS_DIM MATCHES 3)
       LCAO/SoaLocalizedBasisSet.cpp
       LCAO/SoaLocalizedBasisSetT.cpp
       LCAO/LCAOSpinorBuilderT.cpp
-      LCAO/LCAOrbitalSetWithCorrectionT.cpp
-      LCAO/CuspCorrectionConstructionT.cpp
       LCAO/SoaCuspCorrectionT.cpp)
   if(QMC_COMPLEX)
     set(FERMION_SRCS ${FERMION_SRCS} LCAO/LCAOSpinorBuilder.cpp)
@@ -92,7 +90,9 @@ if(OHMMS_DIM MATCHES 3)
     #LCAO cusp correction is not ready for complex
     set(FERMION_SRCS ${FERMION_SRCS}
         LCAO/LCAOrbitalSetWithCorrection.cpp
-	    LCAO/CuspCorrectionConstruction.cpp
+        LCAO/LCAOrbitalSetWithCorrectionT.cpp
+	      LCAO/CuspCorrectionConstruction.cpp
+        LCAO/CuspCorrectionConstructionT.cpp
         LCAO/SoaCuspCorrection.cpp)
   endif(QMC_COMPLEX)
 
@@ -118,10 +118,9 @@ if(OHMMS_DIM MATCHES 3)
     )
     if(QMC_COMPLEX)
       set(FERMION_SRCS ${FERMION_SRCS}
-        EinsplineSpinorSetBuilder.cpp 
         EinsplineSpinorSetBuilderT.cpp) 
       set(FERMION_OMPTARGET_SRCS ${FERMION_OMPTARGET_SRCS}
-        EinsplineSpinorSetBuilder.cpp)
+        EinsplineSpinorSetBuilderT.cpp)
       set(FERMION_OMPTARGET_SRCS ${FERMION_OMPTARGET_SRCS})
     else(QMC_COMPLEX)
       set(FERMION_SRCS ${FERMION_SRCS}

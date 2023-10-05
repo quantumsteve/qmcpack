@@ -218,11 +218,17 @@ CompositeSPOSetBuilderT<T>::createSPOSet(xmlNodePtr cur, SPOSetInputInfo& input)
 }
 
 #ifndef QMC_COMPLEX
+#ifndef MIXED_PRECISION
 template class CompositeSPOSetBuilderT<double>;
-template class CompositeSPOSetBuilderT<float>;
 #else
+template class CompositeSPOSetBuilderT<float>;
+#endif
+#else
+#ifndef MIXED_PRECSION
 template class CompositeSPOSetBuilderT<std::complex<double>>;
+#else
 template class CompositeSPOSetBuilderT<std::complex<float>>;
+#endif
 #endif
 
 } // namespace qmcplusplus

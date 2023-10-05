@@ -955,11 +955,17 @@ LCAOrbitalSetT<T>::applyRotation(
 
 // Class concrete types from ValueType
 #ifndef QMC_COMPLEX
+#ifndef MIXED_PRECISION
 template class LCAOrbitalSetT<double>;
-template class LCAOrbitalSetT<float>;
 #else
+template class LCAOrbitalSetT<float>;
+#endif
+#else
+#ifndef MIXED_PRECISON
 template class LCAOrbitalSetT<std::complex<double>>;
+#else
 template class LCAOrbitalSetT<std::complex<float>>;
+#endif
 #endif
 
 } // namespace qmcplusplus

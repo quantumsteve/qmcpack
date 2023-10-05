@@ -471,28 +471,28 @@ EinsplineSetBuilderT<T>::AnalyzeTwists2(
 
         if (twist_inp[0] > TWIST_NO_INPUT || twist_inp[1] > TWIST_NO_INPUT ||
             twist_inp[2] > TWIST_NO_INPUT) {
-            if (twist_num_inp != TWISTNUM_NO_INPUT)
-                app_warning()
-                    << "twist attribute exists. twistnum attribute ignored. "
-                       "To prevent this message, remove twistnum from input."
-                    << std::endl;
-
-            twist_num_ = find_twist(twist_inp);
-        }
-        else if (twist_num_inp != TWISTNUM_NO_INPUT) {
-            app_warning() << "twist attribute does't exist but twistnum "
-                             "attribute was found. "
-                          << "This is potentially ambiguous. Specifying twist "
-                             "attribute is preferred."
+          if (twist_num_inp != this->TWISTNUM_NO_INPUT)
+            app_warning() << "twist attribute exists. twistnum attribute ignored. "
+                             "To prevent this message, remove twistnum from input."
                           << std::endl;
-            if (twist_num_inp < 0 || twist_num_inp >= numSuperTwists) {
-                std::ostringstream msg;
-                msg << "AnalyzeTwists2. twistnum input value " << twist_num_inp
-                    << " is outside the acceptable range [0, " << numSuperTwists
-                    << ")." << std::endl;
-                throw UniformCommunicateError(msg.str());
-            }
-            twist_num_ = twist_num_inp;
+
+          twist_num_ = find_twist(twist_inp);
+        }
+        else if (twist_num_inp != this->TWISTNUM_NO_INPUT)
+        {
+          app_warning() << "twist attribute does't exist but twistnum "
+                           "attribute was found. "
+                        << "This is potentially ambiguous. Specifying twist "
+                           "attribute is preferred."
+                        << std::endl;
+          if (twist_num_inp < 0 || twist_num_inp >= numSuperTwists)
+          {
+            std::ostringstream msg;
+            msg << "AnalyzeTwists2. twistnum input value " << twist_num_inp << " is outside the acceptable range [0, "
+                << numSuperTwists << ")." << std::endl;
+            throw UniformCommunicateError(msg.str());
+          }
+          twist_num_ = twist_num_inp;
         }
         else {
             app_log() << "twist attribte does't exist. Set Gamma point."
@@ -1398,7 +1398,7 @@ EinsplineSetBuilderT<T>::createSPOSetFromXML(xmlNodePtr cur)
     int sortBands(1);
     int spinSet = 0;
     bool skipChecks = false;
-    int twist_num_inp = TWISTNUM_NO_INPUT;
+    int twist_num_inp = this->TWISTNUM_NO_INPUT;
     TinyVector<double, OHMMS_DIM> twist_inp(TWIST_NO_INPUT);
 
     std::string sourceName;

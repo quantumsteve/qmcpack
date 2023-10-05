@@ -206,7 +206,10 @@ LCAOSpinorBuilderT<T>::putFromH5(
 }
 
 #ifdef QMC_COMPLEX
+#ifndef MIXED_PRECISION
 template class LCAOSpinorBuilderT<std::complex<double>>;
+#else
 template class LCAOSpinorBuilderT<std::complex<float>>;
+#endif
 #endif
 } // namespace qmcplusplus

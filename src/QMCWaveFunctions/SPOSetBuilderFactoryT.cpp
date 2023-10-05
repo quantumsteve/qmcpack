@@ -277,10 +277,16 @@ template <typename T>
 std::string SPOSetBuilderFactoryT<T>::basisset_tag = "basisset";
 
 #ifdef QMC_COMPLEX
+#ifndef MIXED_PRECISION
 template class SPOSetBuilderFactoryT<std::complex<double>>;
-template class SPOSetBuilderFactoryT<std::complex<float>>;
 #else
+template class SPOSetBuilderFactoryT<std::complex<float>>;
+#endif
+#else
+#ifndef MIXED_PRECISION
 template class SPOSetBuilderFactoryT<double>;
+#else
 template class SPOSetBuilderFactoryT<float>;
+#endif
 #endif
 } // namespace qmcplusplus

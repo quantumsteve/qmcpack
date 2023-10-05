@@ -24,6 +24,7 @@
 #include "QMCWaveFunctions/WaveFunctionComponent.h"
 #include "QMCWaveFunctions/EinsplineSetBuilder.h"
 #include "QMCWaveFunctions/EinsplineSpinorSetBuilder.h"
+#include "QMCWaveFunctions/SPOSet.h"
 #include <ResourceCollection.h>
 
 using std::string;

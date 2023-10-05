@@ -795,7 +795,11 @@ CuspCorrectionConstructionT<T>::saveCusp(const std::string& filename,
     xmlFreeDoc(doc);
 }
 
+#ifdef
+#ifndef MIXED_PRECISION
 template class CuspCorrectionConstructionT<double>;
+#else
 template class CuspCorrectionConstructionT<float>;
+#endif
 
 } // namespace qmcplusplus

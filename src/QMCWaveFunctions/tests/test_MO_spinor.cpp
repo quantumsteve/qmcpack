@@ -297,7 +297,7 @@ void test_lcao_spinor()
     displs.spins     = {dS[iat], dS[iat]};
     elec_.mw_makeMove(p_list, iat, displs);
     std::vector<bool> accept = {true, true};
-    elec_.mw_accept_rejectMove<CoordsType::POS_SPIN>(p_list, iat, accept);
+    elec_.mw_accept_rejectMoveT<CoordsType::POS_SPIN>(p_list, iat, accept);
   }
   elec_.mw_update(p_list);
 
@@ -343,7 +343,7 @@ void test_lcao_spinor()
     CHECK(mw_dspin(1, 0) == ComplexApprox(vds2).epsilon(eps));
 
     std::vector<bool> accept = {false, false};
-    elec_.mw_accept_rejectMove<CoordsType::POS_SPIN>(p_list, iat, accept);
+    elec_.mw_accept_rejectMoveT<CoordsType::POS_SPIN>(p_list, iat, accept);
   }
 }
 
@@ -621,7 +621,7 @@ void test_lcao_spinor_excited()
     displs.spins     = {dS[iat], dS[iat]};
     elec_.mw_makeMove(p_list, iat, displs);
     std::vector<bool> accept = {true, true};
-    elec_.mw_accept_rejectMove<CoordsType::POS_SPIN>(p_list, iat, accept);
+    elec_.mw_accept_rejectMoveT<CoordsType::POS_SPIN>(p_list, iat, accept);
   }
   elec_.mw_update(p_list);
 
@@ -666,7 +666,7 @@ void test_lcao_spinor_excited()
     CHECK(d2psi_v_list[1].get()[0] == ComplexApprox(vlp2).epsilon(eps));
     CHECK(mw_dspin(1, 0) == ComplexApprox(vds2).epsilon(eps));
     std::vector<bool> accept = {false, false};
-    elec_.mw_accept_rejectMove<CoordsType::POS_SPIN>(p_list, iat, accept);
+    elec_.mw_accept_rejectMoveT<CoordsType::POS_SPIN>(p_list, iat, accept);
   }
 }
 

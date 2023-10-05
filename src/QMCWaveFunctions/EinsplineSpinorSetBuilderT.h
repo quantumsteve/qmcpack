@@ -16,8 +16,8 @@
  *   and then construct an appropriate einspline spinor set object.
  *
  */
-#ifndef QMCPLUSPLUS_EINSPLINE_SPINORSET_BUILDER_H
-#define QMCPLUSPLUS_EINSPLINE_SPINORSET_BUILDER_H
+#ifndef QMCPLUSPLUS_EINSPLINE_SPINORSET_BUILDERT_H
+#define QMCPLUSPLUS_EINSPLINE_SPINORSET_BUILDERT_H
 
 #include "QMCWaveFunctions/SPOSetT.h"
 #include "QMCWaveFunctions/SPOSetBuilderT.h"
@@ -30,15 +30,14 @@ namespace qmcplusplus
 template<typename T>
 class EinsplineSpinorSetBuilderT : public EinsplineSetBuilderT<T>
 {
-
-  using ParticleSet = typename ParticleSetT<T>;
-  using SPOSet       = typename SPOSetT<T>;
+  using ParticleSet = ParticleSetT<T>;
+  using SPOSet      = SPOSetT<T>;
   using PSetMap = std::map<std::string, const std::unique_ptr<ParticleSet>>;
 
 public:
   ///constructor
   EinsplineSpinorSetBuilderT(ParticleSet& p, const PSetMap& psets, Communicate* comm, xmlNodePtr cur)
-      : EinsplineSetBuilder(p, psets, comm, cur){};
+      : EinsplineSetBuilderT<T>(p, psets, comm, cur){};
 
   ///destructor
   ~EinsplineSpinorSetBuilderT() override{};
@@ -46,7 +45,7 @@ public:
   /** initialize the Antisymmetric wave function for electrons
    * @param cur the current xml node
    */
-  std::unique_ptr<SPOSet> createSPOSetFromXML(xmlNodePtr cur) override;
+  std::unique_ptr<SPOSetT<T>> createSPOSetFromXML(xmlNodePtr cur) override;
 };
 
 } // namespace qmcplusplus

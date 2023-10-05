@@ -33,9 +33,7 @@ set(WFBASE_SRCS
     SPOSetInputInfo.cpp
     SPOSetT.cpp
     CompositeSPOSetT.cpp
-    HarmonicOscillator/SHOSet.cpp
     HarmonicOscillator/SHOSetT.cpp
-    HarmonicOscillator/SHOSetBuilder.cpp
     HarmonicOscillator/SHOSetBuilderT.cpp
     ExampleHeBuilder.cpp
     ExampleHeComponent.cpp
@@ -74,7 +72,6 @@ if(OHMMS_DIM MATCHES 3)
       LCAO/LCAOrbitalSetT.cpp
       LCAO/LCAOrbitalBuilderT.cpp
       LCAO/MultiQuinticSpline1D.cpp
-      LCAO/AOBasisBuilder.cpp
       LCAO/AOBasisBuilderT.cpp
       LCAO/SoaLocalizedBasisSet.cpp
       LCAO/SoaLocalizedBasisSetT.cpp
@@ -87,7 +84,6 @@ if(OHMMS_DIM MATCHES 3)
     set(FERMION_SRCS ${FERMION_SRCS}
         LCAO/LCAOrbitalSetWithCorrection.cpp
         LCAO/LCAOrbitalSetWithCorrectionT.cpp
-	      LCAO/CuspCorrectionConstruction.cpp
         LCAO/CuspCorrectionConstructionT.cpp
         LCAO/SoaCuspCorrection.cpp)
   endif(QMC_COMPLEX)

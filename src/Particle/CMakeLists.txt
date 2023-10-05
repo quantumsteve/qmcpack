@@ -13,7 +13,6 @@
 # create libqmcparticle
 ####################################
 set(PARTICLE
-    InitMolecularSystem.cpp
     InitMolecularSystemT.cpp
     SimulationCellT.cpp
     ParticleSetPoolT.cpp

@@ -43,9 +43,6 @@ set(WFBASE_SRCS
     RotatedSPOsT.cpp
     SpinorSetT.cpp)
 
-if(QMC_COMPLEX)
-  set(WFBASE_SRCS ${WFBASE_SRCS} SpinorSet.cpp)
-endif(QMC_COMPLEX)
 ########################
 # build jastrows
 ########################

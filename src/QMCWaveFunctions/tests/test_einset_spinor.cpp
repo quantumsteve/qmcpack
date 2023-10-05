@@ -21,7 +21,7 @@
 #include "QMCWaveFunctions/SPOSetBuilderFactory.h"
 #include "Utilities/ResourceCollection.h"
 #include "QMCWaveFunctions/SpinorSet.h"
-
+#include "QMCWaveFunctions/SPOSet.h"
 #include <stdio.h>
 #include <string>
 #include <limits>

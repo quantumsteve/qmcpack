@@ -77,6 +77,8 @@ public:
     using ComplexType = typename OrbitalSetTraits<T>::ComplexType;
     using ValueType = typename OrbitalSetTraits<T>::ValueType;
     using FullRealType = typename OrbitalSetTraits<double>::RealType;
+    using FullValueType = typename OrbitalSetTraits<T>::FullValueType;
+    ;
     template <typename DT>
     using OffloadMatrix = Matrix<DT, OffloadPinnedAllocator<DT>>;
 
@@ -229,7 +231,7 @@ public:
     virtual void evaluateDerivativesWF(ParticleSetT<T>& P,
                                        const OptVariablesTypeT<T>& optvars,
                                        Vector<ValueType>& dlogpsi,
-                                       const ValueType& psiCurrent,
+                                       const FullValueType& psiCurrent,
                                        const std::vector<T>& Coeff,
                                        const std::vector<size_t>& C2node_up,
                                        const std::vector<size_t>& C2node_dn,

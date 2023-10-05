@@ -38,6 +38,7 @@ public:
     using IndexType = typename SPOSetT<T>::IndexType;
     using RealType = typename SPOSetT<T>::RealType;
     using ValueType = typename SPOSetT<T>::ValueType;
+    using FullValueType     = typename SPOSetT<T>::FullValueType;
     using GradType = typename SPOSetT<T>::GradType;
     using ComplexType = typename SPOSetT<T>::ComplexType;
     using FullRealType = typename SPOSetT<T>::FullRealType;
@@ -240,7 +241,7 @@ public:
     void evaluateDerivativesWF(ParticleSetT<T>& P,
                                const OptVariablesTypeT<T>& optvars,
                                Vector<ValueType>& dlogpsi,
-                               const ValueType& psiCurrent,
+                               const FullValueType& psiCurrent,
                                const std::vector<ValueType>& Coeff,
                                const std::vector<size_t>& C2node_up,
                                const std::vector<size_t>& C2node_dn,

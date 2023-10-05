@@ -32,7 +32,6 @@ set(WFBASE_SRCS
     SPOSetInfo.cpp
     SPOSetInputInfo.cpp
     SPOSetT.cpp
-    CompositeSPOSet.cpp
     CompositeSPOSetT.cpp
     HarmonicOscillator/SHOSet.cpp
     HarmonicOscillator/SHOSetT.cpp

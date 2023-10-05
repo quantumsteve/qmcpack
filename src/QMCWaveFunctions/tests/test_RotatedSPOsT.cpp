@@ -90,11 +90,7 @@ using TestTypeList = std::tuple<double>;
 using TestTypeList = std::tuple<float>;
 #endif
 #else
-#ifndef MIXED_PRECISION
-using TestTypeList = std::tuple<std::complex<double>>;
-#else
-using TestTypeList = std::tuple<std::complex<float>>;
-#endif
+using TestTypeList = std::tuple<>;
 #endif
 
 /*

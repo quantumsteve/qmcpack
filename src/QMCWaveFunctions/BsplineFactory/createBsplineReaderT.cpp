@@ -144,12 +144,11 @@ struct CreateComplexHelper<std::complex<T>>
             if (hybrid_rep) {
                 app_summary()
                     << "    Using hybrid orbital representation." << std::endl;
-                aReader = std::make_unique<HybridRepSetReaderT<
-                    HybridRepCplxT<SplineC2COMPTargetT<float, ValueType>>>>(e);
+                aReader =
+                    std::make_unique<HybridRepSetReaderT<HybridRepCplxT<SplineC2COMPTargetT<double, ValueType>>>>(e);
             }
             else
-                aReader = std::make_unique<
-                    SplineSetReaderT<SplineC2COMPTargetT<float, ValueType>>>(e);
+              aReader = std::make_unique<SplineSetReaderT<SplineC2COMPTargetT<double, ValueType>>>(e);
         }
         else {
             app_summary() << "    Running on CPU." << std::endl;

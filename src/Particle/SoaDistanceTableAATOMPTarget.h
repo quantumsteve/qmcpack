@@ -123,11 +123,9 @@ struct SoaDistanceTableAATOMPTarget :
 
     size_t compute_size(int N) const
     {
-        const size_t num_padded = getAlignedSize<T>(N);
-        const size_t Alignment = getAlignment<T>();
-        return (num_padded * (2 * N - num_padded + 1) +
-                   (Alignment - 1) * num_padded) /
-            2;
+      const size_t num_padded = getAlignedSize<RealType>(N);
+      const size_t Alignment  = getAlignment<RealType>();
+      return (num_padded * (2 * N - num_padded + 1) + (Alignment - 1) * num_padded) / 2;
     }
 
     void

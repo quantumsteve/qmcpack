@@ -88,7 +88,7 @@ struct SoaDistanceTableAATOMPTarget :
     SoaDistanceTableAATOMPTarget(ParticleSetT<T>& target) :
         DTD_BConds<RealType, D, SC>(target.getLattice()),
         DistanceTableAAT<T>(target, DTModes::ALL_OFF),
-        num_targets_padded_(getAlignedSize<T>(this->num_targets_)),
+        num_targets_padded_(getAlignedSize<RealType>(this->num_targets_)),
 #if !defined(NDEBUG)
         old_prepared_elec_id_(-1),
 #endif

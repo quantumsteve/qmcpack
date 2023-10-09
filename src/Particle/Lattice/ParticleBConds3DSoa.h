@@ -147,6 +147,7 @@ struct DTD_BConds<T, 3, PPPO + SOA_OFFSET>
                                int iat,
                                int flip_ind = 0) const
   {
+    //HERE!!!!
     const T x0 = pos[0];
     const T y0 = pos[1];
     const T z0 = pos[2];
@@ -166,6 +167,7 @@ struct DTD_BConds<T, 3, PPPO + SOA_OFFSET>
     dy[iat]     = L1 * (y - round(y));
     dz[iat]     = L2 * (z - round(z));
     temp_r[iat] = std::sqrt(dx[iat] * dx[iat] + dy[iat] * dy[iat] + dz[iat] * dz[iat]);
+    std::cout << "temp_r[iat]: " << iat << " " << temp_r[iat] << std::endl;
   }
 
   T computeDist(T dx, T dy, T dz) const

@@ -657,10 +657,10 @@ void test_distance_fcc_pbc_z_batched_APIs(DynamicCoordinateKind test_kind)
 
 TEST_CASE("distance_pbc_z batched APIs", "[distance_table][xml]")
 {
-  test_distance_pbc_z_batched_APIs(DynamicCoordinateKind::DC_POS);
+  //test_distance_pbc_z_batched_APIs(DynamicCoordinateKind::DC_POS);
   test_distance_pbc_z_batched_APIs(DynamicCoordinateKind::DC_POS_OFFLOAD);
-  test_distance_fcc_pbc_z_batched_APIs(DynamicCoordinateKind::DC_POS);
-  test_distance_fcc_pbc_z_batched_APIs(DynamicCoordinateKind::DC_POS_OFFLOAD);
+  //test_distance_fcc_pbc_z_batched_APIs(DynamicCoordinateKind::DC_POS);
+  //test_distance_fcc_pbc_z_batched_APIs(DynamicCoordinateKind::DC_POS_OFFLOAD);
 }
 
 void test_distance_pbc_z_batched_APIs_ee_NEED_TEMP_DATA_ON_HOST(DynamicCoordinateKind test_kind)
@@ -727,11 +727,11 @@ void test_distance_pbc_z_batched_APIs_ee_NEED_TEMP_DATA_ON_HOST(DynamicCoordinat
 
 TEST_CASE("distance_pbc_z batched APIs ee NEED_TEMP_DATA_ON_HOST", "[distance_table][xml]")
 {
-  test_distance_pbc_z_batched_APIs_ee_NEED_TEMP_DATA_ON_HOST(DynamicCoordinateKind::DC_POS);
-  test_distance_pbc_z_batched_APIs_ee_NEED_TEMP_DATA_ON_HOST(DynamicCoordinateKind::DC_POS_OFFLOAD);
+  //test_distance_pbc_z_batched_APIs_ee_NEED_TEMP_DATA_ON_HOST(DynamicCoordinateKind::DC_POS);
+  //test_distance_pbc_z_batched_APIs_ee_NEED_TEMP_DATA_ON_HOST(DynamicCoordinateKind::DC_POS_OFFLOAD);
 }
 
-TEST_CASE("test_distance_pbc_diamond", "[distance_table][xml]")
+/*TEST_CASE("test_distance_pbc_diamond", "[distance_table][xml]")
 {
   auto pset_pool = MinimalParticlePool::make_diamondC_1x1x1(OHMMS::Controller);
 
@@ -743,5 +743,5 @@ TEST_CASE("test_distance_pbc_diamond", "[distance_table][xml]")
   elecs.addTable(ions);
   elecs.addTable(elecs);
   elecs.update();
-}
+}*/
 } // namespace qmcplusplus

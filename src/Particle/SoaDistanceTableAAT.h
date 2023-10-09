@@ -24,7 +24,7 @@ namespace qmcplusplus
  */
 template <typename T, unsigned D, int SC>
 struct SoaDistanceTableAAT :
-    public DTD_BConds<typename ParticleSetTraits<T>::RealType, D, SC>,
+    public DTD_BConds<typename DistanceTableAAT<T>::RealType, D, SC>,
     public DistanceTableAAT<T>
 {
     using RealType = typename DistanceTableAAT<T>::RealType;
